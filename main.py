@@ -50,6 +50,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.model.setRootPath(path)
         self.treeView.setModel(self.model)
         self.treeView.setRootIndex(self.model.index(path))
+        # 更换目录做一次清空
+        self.pyqtgraph.clear()
 
     def context_menu(self):
         menu = QMenu()
@@ -61,11 +63,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def plotdatafile(self):
         index = self.treeView.currentIndex()
         file_path = self.model.filePath(index)
-        data = self.opendatafile(file_path)
-        self.pyqtgraph.plot(data)
-
-    def opendatafile(self,filepath):
-        return np.loadtxt(filepath, dtype=float, skiprows=1, usecols=1)
+        try:
+            data = np.loadtxt(file_path, dtype=float, skiprows=1, usecols=1)
+            self.pyqtgraph.plot(data)
+        except:
+            QMessageBox.warning(self, "警告", "你所选择的文件不是一个数据文件", QMessageBox.Yes, QMessageBox.Yes)
 
     @pyqtSlot()
     def on_clearButton_clicked(self):
@@ -75,7 +77,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_browserButton_clicked(self):
         fileDialog = QFileDialog()
         fileDialog.setViewMode(QFileDialog.Detail)
-        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep +'desktop')
+        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
         self.lineEdit.setText(path)
         self.changworkdir(path)
 
