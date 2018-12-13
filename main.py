@@ -5,14 +5,12 @@ Module implementing MainWindow.
 """
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication,QTreeView,QFileSystemModel,QMenu
+from PyQt5.QtWidgets import QMainWindow, QApplication,QFileSystemModel,QMenu
 import PyQt5.QtCore as QtCore
 from ui import Ui_MainWindow
 import sys
 import numpy as np
-import pyqtgraph as pg
 
-abspath = r"C:\Users\MrvX\Desktop\MSA\data"
 path = "./data/"
 testdataname = "Test.txt"
 testdata = path + testdataname
@@ -27,13 +25,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _initUI(self):
         print("_initUI process")
         self.setupUi(self)
-        #pyqtgraph setting
-        pg.setConfigOptions(antialias=True)  # 使曲线看起来更光滑，而不是锯齿状
-        pg.setConfigOptions(leftButtonPan=False)
         #初始化文件管理器
         self.model = QFileSystemModel()
-        self.model.setRootPath(path)
         #设置工作目录
+        self.model.setRootPath(path)
         self.treeView.setModel(self.model)
         self.treeView.setRootIndex(self.model.index(path))
         #treeView右键菜单设置
@@ -43,29 +38,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def context_menu(self):
         menu = QMenu()
         open = menu.addAction("添加到绘图")
-        open.triggered.connect(self.open_file)
+        open.triggered.connect(self.plotDataFile)
+        clear = menu.addAction("清除绘图")
+        clear.triggered.connect(self.clear)
         cursor = QCursor()
         menu.exec_(cursor.pos())
 
-    def open_file(self):
+    def plotDataFile(self):
         index = self.treeView.currentIndex()
         file_path = self.model.filePath(index)
-        self.plotDataFile(file_path)
-
-    def plotDataFile(self,filepath):
-        data = self.openDataFile(filepath)
+        data = self.openDataFile(file_path)
         self.pyqtgraph.plot(data)
 
     def openDataFile(self,filepath):
         return np.loadtxt(filepath, dtype=float, skiprows=1, usecols=1)
+
+    def clear(self):
+        #清空绘图区域内容
+        self.pyqtgraph.clear()
 
     @pyqtSlot()
     def on_pushButton_clicked(self):
         """
         Slot documentation goes here.
         """
-
-        self.pyqtgraph.clear() # 清空里面的内容，否则会发生重复绘图的结果
 
         #测试用示例数据
         data = self.openDataFile(testdata)
