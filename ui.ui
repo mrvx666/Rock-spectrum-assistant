@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>吉林大学岩石矿物光谱管理系统</string>
+   <string>Rock Spectrum Assistant</string>
   </property>
   <property name="windowIcon">
    <iconset resource="apprcc.qrc">

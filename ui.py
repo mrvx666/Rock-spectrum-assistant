@@ -68,7 +68,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "吉林大学岩石矿物光谱管理系统"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Rock Spectrum Assistant"))
         self.pyqtgraph.setWhatsThis(_translate("MainWindow", "<html><head/><body><p>根据选择数据绘出的结果图</p></body></html>"))
         self.checkBox_2.setText(_translate("MainWindow", "自动保存"))
         self.checkBox.setText(_translate("MainWindow", "自动载入"))
