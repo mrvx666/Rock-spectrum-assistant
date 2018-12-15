@@ -5,7 +5,7 @@ Module implementing MainWindow.
 """
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel, QMenu, QMessageBox, QFileDialog, QInputDialog,QLineEdit
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel, QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
 import PyQt5.QtCore as QtCore
 from ui import Ui_MainWindow
 import sys
@@ -23,7 +23,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent=parent)
         self._initUI()
-        self.plotcount = 1
+        self.plotcount = 0
         self.plotlimit = 5
 
     def _initUI(self, path=defaultpathname):
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         menu.exec_(cursor.pos())
 
     def plotdatafile(self):
-        if self.plotcount > self.plotlimit:
+        if self.plotcount >= self.plotlimit:
             QMessageBox.warning(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Yes, QMessageBox.Yes)
 
         try:
@@ -138,9 +138,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.editdatafile(self.fileindex)
 
     def editdatafile(self,filepath):
-        """
-        这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
-        """
+        # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         subprocess.call("notepad " + filepath, shell=True)
 
     def removefile(self):
@@ -161,7 +159,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_clearButton_clicked(self):
         self.pyqtgraph.clear()
-        self.plotcount = 1
+        self.plotcount = 0
 
     @pyqtSlot()
     def on_browserButton_clicked(self):
