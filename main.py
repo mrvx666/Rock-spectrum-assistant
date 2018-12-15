@@ -8,7 +8,9 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel, QMenu, QMessageBox, QFileDialog, QInputDialog,QLineEdit
 import PyQt5.QtCore as QtCore
 from ui import Ui_MainWindow
-import sys, os
+import sys
+import os
+import subprocess
 import numpy as np
 
 defaultpathname = "data"
@@ -136,7 +138,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.editdatafile(self.fileindex)
 
     def editdatafile(self,filepath):
-        os.system("notepad " + filepath)
+        """
+        这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
+        """
+        subprocess.call("notepad " + filepath, shell=True)
 
     def removefile(self):
         if os.path.isdir(self.fileindex):
