@@ -95,6 +95,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         cursor = QCursor()
         menu.exec_(cursor.pos())
 
+    def getworkdir(self):
+        return self.lineEdit.text()
+
     def plotdatafile(self):
         # 绘图板上图形过多，提示用户
         if self.plotcount >= self.plotlimit:
@@ -110,8 +113,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def addfile(self):
 
         if self.fileindex == '':
-            # 如果指针为空，赋值到程序所在目录，防止用户点击顶级目录空白处无法正常addfile
-            self.fileindex = os.getcwd()
+            # 如果指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
+            self.fileindex = self.getworkdir()
 
         # 弹出对话框，获取文件名；按下ok，okPressed为真
         filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
