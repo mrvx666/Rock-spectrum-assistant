@@ -32,7 +32,7 @@ class aboutDialogUI(QDialog,Ui_aboutDialog):
     def on_closeButton_clicked(self):
         self.close()
 
-    # 这段代码没什么用，存储，如果改做他用建议把这段代码删了
+    # 这段代码没什么用，纯粹为了发泄而已，如果改做它用建议把这段代码删了
     def eventFilter(self, watched, event):
         if watched == self.geoicolabel:
             if event.type() == QEvent.MouseButtonPress:

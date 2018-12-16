@@ -18,6 +18,11 @@
     <normaloff>:/image/JLUgeo.ico</normaloff>:/image/JLUgeo.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei UI</family>
+    </font>
+   </property>
    <widget class="PlotWidget" name="pyqtgraph" native="true">
     <property name="geometry">
      <rect>
@@ -26,6 +31,11 @@
       <width>375</width>
       <height>320</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI Light</family>
+     </font>
     </property>
     <property name="whatsThis">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;根据选择数据绘出的结果图&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -45,6 +55,11 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QCheckBox" name="checkBox_2">
+         <property name="font">
+          <font>
+           <family>Microsoft YaHei UI</family>
+          </font>
+         </property>
          <property name="text">
           <string>自动保存</string>
          </property>
@@ -52,6 +67,11 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox">
+         <property name="font">
+          <font>
+           <family>Microsoft YaHei UI</family>
+          </font>
+         </property>
          <property name="text">
           <string>自动载入</string>
          </property>
@@ -63,6 +83,11 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="clearButton">
+         <property name="font">
+          <font>
+           <family>Microsoft YaHei UI</family>
+          </font>
+         </property>
          <property name="text">
           <string>清空绘图</string>
          </property>
@@ -100,6 +125,11 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
+    </property>
     <property name="text">
      <string>浏览</string>
     </property>
@@ -115,6 +145,11 @@
       <width>241</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
     </property>
    </widget>
   </widget>
@@ -139,6 +174,11 @@
   <action name="About">
    <property name="text">
     <string>About</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei UI</family>
+    </font>
    </property>
   </action>
  </widget>
