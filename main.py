@@ -12,7 +12,7 @@ import os
 import subprocess
 import numpy as np
 from ui import Ui_MainWindow
-from CallAboutDialog import aboutDialogUI
+from callaboutdialog import aboutDialogUI
 
 defaultpathname = "data"
 defaultdataformat = ".txt"

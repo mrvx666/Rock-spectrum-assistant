@@ -3,11 +3,12 @@ from PyQt5.QtWidgets import QDialog,QApplication,QMessageBox
 from PyQt5.QtCore import pyqtSlot,QUrl,QEvent,Qt
 from PyQt5.QtGui import QDesktopServices,QMouseEvent
 import sys
-from aboutDialog import Ui_aboutDialog
+from aboutdialog import Ui_aboutDialog
 
 jlu_geo_website = "http://geo.jlu.edu.cn/"
 project_gituhub_url = "https://github.com/mrvx666/Rock-spectrum-assistant"
 SB_jjh = "https://www.zhihu.com/question/42012531"
+
 
 class aboutDialogUI(QDialog,Ui_aboutDialog):
     def __init__(self, parent=None):
@@ -36,18 +37,19 @@ class aboutDialogUI(QDialog,Ui_aboutDialog):
         if watched == self.geoicolabel:
             if event.type() == QEvent.MouseButtonPress:
                 mouseEvent = QMouseEvent(event)
+                self.clickcount += 1
                 if mouseEvent.button() == Qt.LeftButton:
-                    if self.clickcount == 3:
+                    if self.clickcount == 4:
                         QMessageBox.information(self, "学长真言", "你似乎发现了彩蛋\n再点击5次即可查看", QMessageBox.Yes,
                                                 QMessageBox.Yes)
-                    if self.clickcount >= 8:
+                    if self.clickcount == 9:
                         reply = QMessageBox.information(self, "学长真言", "金锦花是傻逼，萨比，撒币\n点击确定查看九评金锦花", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
                         if (reply == QMessageBox.Yes):
                             QDesktopServices.openUrl(QUrl(SB_jjh))
                         if (reply == QMessageBox.No):
                             pass
+                        self.clickcount = 0
 
-                self.clickcount += 1
         return QDialog.eventFilter(self, watched, event)
 
 
