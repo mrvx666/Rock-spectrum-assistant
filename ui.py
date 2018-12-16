@@ -55,13 +55,19 @@ class Ui_MainWindow(object):
         self.lineEdit.setGeometry(QtCore.QRect(410, 20, 241, 21))
         self.lineEdit.setObjectName("lineEdit")
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 716, 23))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.menuBar = QtWidgets.QMenuBar(MainWindow)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 716, 23))
+        self.menuBar.setObjectName("menuBar")
+        self.menuSetting = QtWidgets.QMenu(self.menuBar)
+        self.menuSetting.setObjectName("menuSetting")
+        MainWindow.setMenuBar(self.menuBar)
+        self.About = QtWidgets.QAction(MainWindow)
+        self.About.setObjectName("About")
+        self.menuSetting.addAction(self.About)
+        self.menuBar.addAction(self.menuSetting.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -74,6 +80,8 @@ class Ui_MainWindow(object):
         self.checkBox.setText(_translate("MainWindow", "自动载入"))
         self.clearButton.setText(_translate("MainWindow", "清空绘图"))
         self.browserButton.setText(_translate("MainWindow", "浏览"))
+        self.menuSetting.setTitle(_translate("MainWindow", "Setting"))
+        self.About.setText(_translate("MainWindow", "About"))
 
 from pyqtgraph import PlotWidget
 import apprcc_rc

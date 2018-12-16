@@ -7,11 +7,12 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel, QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
 import PyQt5.QtCore as QtCore
-from ui import Ui_MainWindow
 import sys
 import os
 import subprocess
 import numpy as np
+from ui import Ui_MainWindow
+from CallAboutDialog import aboutDialogUI
 
 defaultpathname = "data"
 defaultdataformat = ".txt"
@@ -27,18 +28,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plotlimit = 5
 
     def _initUI(self, path=defaultpathname):
+        # 载入UI
         self.setupUi(self)
-
         # 初始化文件管理器
         self.model = QFileSystemModel()
         # 设置工作目录
         self.changworkdir(path)
         # 判断工作目录下data文件夹是否存在
         if os.path.exists(os.getcwd()+os.path.sep+defaultpathname):
-            # 存在
+            # 存在，设置路径提示文本框
             self.lineEdit.setText(os.getcwd()+os.path.sep+defaultpathname)
         else:
-            # 提示用户浏览目录
+            # 不存在，提示用户希望进行的操作
             reply = QMessageBox.warning(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置", QMessageBox.Yes | QMessageBox.No,
                                         QMessageBox.Yes)
             if (reply == QMessageBox.Yes):
@@ -48,11 +49,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # 用户点击No，设置提示
                 self.lineEdit.setText("请点击右侧按钮设置工作目录")
 
-        # treeView右键菜单设置
+        # menubar菜单关联子窗体
+        self.aboutwin = aboutDialogUI()
+        self.About.triggered.connect(self.aboutthisprogram)
+        # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
         # 窗口置顶
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
     def changworkdir(self, path):
         self.model.setRootPath(path)
@@ -61,10 +65,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 更换目录做一次清空
         self.pyqtgraph.clear()
 
+    def aboutthisprogram(self):
+        print("aboutthisprogram")
+        self.aboutwin.show()
+
     def context_menu(self):
-        menu = QMenu()
+        # 设定鼠标点击位置的指针
         index = self.treeView.currentIndex()
         self.fileindex = self.model.filePath(index)
+
+        # 添加右键菜单
+        menu = QMenu()
+
         plot = menu.addAction("plot")
         plot.triggered.connect(self.plotdatafile)
         addfile = menu.addAction("addfile")
@@ -73,10 +85,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         editfile.triggered.connect(self.editfile)
         removefile = menu.addAction("removefile")
         removefile.triggered.connect(self.removefile)
+
         cursor = QCursor()
         menu.exec_(cursor.pos())
 
     def plotdatafile(self):
+        # 绘图板上图形过多，提示用户
         if self.plotcount >= self.plotlimit:
             QMessageBox.warning(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Yes, QMessageBox.Yes)
 
@@ -133,6 +147,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def editfile(self):
         if os.path.isdir(self.fileindex):
+            # 打开的是一个目录而不是一个文件时提示用户
             QMessageBox.warning(self, "温馨提示", "请选择一个数据文件", QMessageBox.Yes, QMessageBox.Yes)
         elif os.path.isfile(self.fileindex):
             self.editdatafile(self.fileindex)

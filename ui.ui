@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="apprcc.qrc">
-    <normaloff>:/图标/JLUgeo.ico</normaloff>:/图标/JLUgeo.ico</iconset>
+    <normaloff>:/image/JLUgeo.ico</normaloff>:/image/JLUgeo.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="PlotWidget" name="pyqtgraph" native="true">
@@ -118,7 +118,8 @@
     </property>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -127,8 +128,19 @@
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Setting</string>
+    </property>
+    <addaction name="About"/>
+   </widget>
+   <addaction name="menuSetting"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <action name="About">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
