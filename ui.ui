@@ -61,7 +61,7 @@
           </font>
          </property>
          <property name="text">
-          <string>自动保存</string>
+          <string>窗口置顶</string>
          </property>
         </widget>
        </item>
@@ -89,7 +89,7 @@
           </font>
          </property>
          <property name="text">
-          <string>清空绘图</string>
+          <string>Clear</string>
          </property>
         </widget>
        </item>
@@ -136,7 +136,7 @@
    </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -150,6 +150,9 @@
      <font>
       <family>Microsoft YaHei UI</family>
      </font>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -190,6 +193,14 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>clearButton</tabstop>
+  <tabstop>browserButton</tabstop>
+  <tabstop>treeView</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>checkBox</tabstop>
+ </tabstops>
  <resources>
   <include location="apprcc.qrc"/>
  </resources>

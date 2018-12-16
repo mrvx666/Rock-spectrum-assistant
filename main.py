@@ -16,7 +16,10 @@ from callaboutdialog import aboutDialogUI
 
 defaultpathname = "data"
 defaultdataformat = ".txt"
-testdata = "Wavelength	XK1Y08-100000.asd\n350	 0.068295808533771 \n351	 6.88503984835842E-02 \n353	 6.96586664904809E-02 "
+testdata = "Wavelength	XK1Y08-100000.asd\n" \
+           "350	 0.068295808533771 \n" \
+           "351	 6.88503984835842E-02 \n" \
+           "353	 6.96586664904809E-02 "
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -28,7 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plotlimit = 5
 
     def _initUI(self, path=defaultpathname):
-        # 载入UI
+        # 载入UI.py
         self.setupUi(self)
         # 初始化文件管理器
         self.model = QFileSystemModel()
@@ -49,24 +52,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # 用户点击No，设置提示
                 self.lineEdit.setText("请点击右侧按钮设置工作目录")
 
-        # menubar菜单关联子窗体
+        # 菜单栏关联子窗体
         self.aboutwin = aboutDialogUI()
-        self.About.triggered.connect(self.aboutthisprogram)
+        self.About.triggered.connect(self.about)
+
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
+
         # 窗口置顶
         #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
     def changworkdir(self, path):
+        # 设置工作目录，代码顺序不能颠倒
         self.model.setRootPath(path)
         self.treeView.setModel(self.model)
         self.treeView.setRootIndex(self.model.index(path))
+
         # 更换目录做一次清空
         self.pyqtgraph.clear()
 
-    def aboutthisprogram(self):
-        print("aboutthisprogram")
+        # 初始化文件指针，如果不初始化用户点击顶级目录空白处无法正常addfile
+        self.fileindex = path
+
+    def about(self):
         self.aboutwin.show()
 
     def context_menu(self):
@@ -99,17 +108,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pyqtgraph.plot(data)
             self.plotcount += 1
         except:
-            QMessageBox.critical(self, "警告", "你所选择的文件不是一个数据文件", QMessageBox.Yes, QMessageBox.Yes)
+            QMessageBox.critical(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Yes, QMessageBox.Yes)
 
     def addfile(self):
         # 弹出对话框，获取文件名；按下ok，okPressed为真
         filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
         fullfilename = filename + defaultdataformat
+
+        if self.fileindex == '':
+            self.fileindex = defaultpathname
+            print(self.fileindex)
+
         # 判断文件是否已经存在
-        print(self.fileindex + os.path.sep + fullfilename)
         if os.path.exists(self.fileindex + os.path.sep + fullfilename):
             # 文件存在，询问用户希望的操作模式
-            reply = QMessageBox.warning(self, "温馨提示", fullfilename + "文件已经存在，点击确定将进入编辑模式",
+            reply = QMessageBox.warning(self, "温馨提示", fullfilename + "文件已经存在，是否进入编辑模式",
                                         QMessageBox.Yes | QMessageBox.No,
                                         QMessageBox.No)
             if (reply == QMessageBox.Yes):
@@ -118,7 +131,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (reply == QMessageBox.No):
                 # 用户点击No，什么也不做
                 pass
+
         else:
+
             if okPressed and filename != '':
                 if os.path.isdir(self.fileindex):
                     # 如果指针位置是一个目录，开始读写文件
@@ -129,21 +144,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if os.path.exists(self.fileindex + os.path.sep + fullfilename):
                         pass
 
-
             # 文件名为空，提示用户
             elif filename == '':
                 QMessageBox.warning(self, "温馨提示", "未输入文件名", QMessageBox.Yes, QMessageBox.Yes)
 
     def writedatatofile(self, filepath):
+        # 弹出提示框让用户输入数据
         data, ok = QInputDialog.getMultiLineText(self, "请输入数据", "请按照示例数据格式输入：", testdata)
+        # 用户按下了ok，不按的话不写入数据
         if ok:
-            try:
-                f = open(filepath, "w")
-                f.write(data)
-            except IOError as e:
-                QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
-            finally:
-                f.close()
+
+            # 检测用户是否完全没有修改数据，同示例数据一样
+            if data == testdata:
+                reply = QMessageBox.warning(self, "温馨提示", "未检测到数据修改，是否继续写入？",
+                                            QMessageBox.Yes | QMessageBox.No,
+                                            QMessageBox.No)
+
+                if (reply == QMessageBox.Yes):
+                    # 用户点击Yes，将示例数据写入到文件
+                    try:
+                        f = open(filepath, "w")
+                        f.write(data)
+                    except IOError as e:
+                        QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
+                    finally:
+                        f.close()
+
+                if (reply == QMessageBox.No):
+                    # 用户点击No，什么也不做
+                    pass
 
     def editfile(self):
         if os.path.isdir(self.fileindex):
