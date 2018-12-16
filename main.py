@@ -72,9 +72,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 更换目录做一次清空
         self.pyqtgraph.clear()
 
-        # 初始化文件指针，如果不初始化用户点击顶级目录空白处无法正常addfile
-        self.fileindex = path
-
     def about(self):
         self.aboutwin.show()
 
@@ -111,14 +108,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Yes, QMessageBox.Yes)
 
     def addfile(self):
+
+        if self.fileindex == '':
+            # 如果指针为空，赋值到程序所在目录，防止用户点击顶级目录空白处无法正常addfile
+            self.fileindex = os.getcwd()
+
         # 弹出对话框，获取文件名；按下ok，okPressed为真
         filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
         fullfilename = filename + defaultdataformat
-
-        if self.fileindex == '':
-            self.fileindex = defaultpathname
-            print(self.fileindex)
-
         # 判断文件是否已经存在
         if os.path.exists(self.fileindex + os.path.sep + fullfilename):
             # 文件存在，询问用户希望的操作模式
