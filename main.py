@@ -4,10 +4,9 @@
 Module implementing MainWindow.
 """
 from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot,Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
                             QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
-import PyQt5.QtCore as QtCore
 import sys
 import os
 import subprocess
@@ -66,10 +65,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.About.triggered.connect(self.about)
 
         # treeView右键菜单关联
-        self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
         # 窗口置顶
-        #self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        # 静止窗口最大化，这个代码使用后会使得关闭和窗口最大化按钮同时失效
+        #self.setWindowFlags(Qt.WindowMinimizeButtonHint)
 
     def changworkdir(self, path):
         # 设置treeview工作目录，代码顺序不能颠倒
@@ -180,26 +181,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         data, ok = QInputDialog.getMultiLineText(self, "请输入数据", "请按照示例数据格式输入：", testdata)
         # 用户按下了ok，不按的话不写入数据
         if ok:
+            try:
+                f = open(filepath, "w")
+                f.write(data)
+                f.close()
+                self.statusbar.showMessage("write " + filepath.lstrip(self.workdir) + " 写入成功")
+            except IOError as e:
+                QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
 
-            # 检测用户是否完全没有修改数据，同示例数据一样
-            if data == testdata:
-                reply = QMessageBox.warning(self, "温馨提示", "未检测到数据修改，是否继续写入？",
-                                            QMessageBox.Yes | QMessageBox.No,
-                                            QMessageBox.No)
 
-                if (reply == QMessageBox.Yes):
-                    # 用户点击Yes，将示例数据写入到文件
-                    try:
-                        f = open(filepath, "w")
-                        f.write(data)
-                        f.close()
-                        self.statusbar.showMessage("write " + filepath.lstrip(self.workdir) + " 写入成功")
-                    except IOError as e:
-                        QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
-
-                if (reply == QMessageBox.No):
-                    # 用户点击No，什么也不做
-                    pass
 
     def editfile(self):
         if os.path.isdir(self.fileindex):
@@ -248,6 +238,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def about(self):
         self.aboutwin.show()
+        self.statusbar.showMessage("about this program")
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
