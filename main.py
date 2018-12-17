@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             data = np.loadtxt(self.fileindex, dtype=float, skiprows=1, usecols=1)
             self.pyqtgraph.plot(data)
             # 在状态栏上显示当前绘图的文件和绘图总数
-            self.statusbar.showMessage("plot " + self.fileindex.strip(self.workdir) + ",当前绘图总数 " + str(self.plotcount+1))
+            self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir) + " ，当前绘图总数 " + str(self.plotcount+1))
             self.plotcount += 1
         except:
             QMessageBox.critical(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Yes, QMessageBox.Yes)
@@ -121,27 +121,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 弹出对话框，获取文件名；按下ok，okPressed为真
         filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
         fullfilename = filename + defaultdataformat
-        self.statusbar.showMessage("add " + self.fileindex.strip(self.workdir) + os.sep + fullfilename)
 
         # 这里默认文件指针指向的是一个目录，拼出完整文件路径
         fullfilepath = self.fileindex + os.path.sep + fullfilename
-        isfileexists = self.fileexists(fullfilepath)
-        # 判断文件是否已经存在
-        if isfileexists:
-            pass
 
-        else:
+        # 判断文件是否已经存在，如果已经存在就在方法内部处理
+        isfileexists = self.fileexists(fullfilepath)
+        if not isfileexists:
+
             # 文件不存在，那么文件指针所指向的是一个文件吗？
             if os.path.isfile(self.fileindex):
                 # 指针位置是一个文件，获取文件所在目录，修改路径
                 fullfilepath = os.path.dirname(self.fileindex) + os.path.sep + fullfilename
-
-                # 修改目录后，用户指定的文件名是否已经存在？
+                # 修改目录后，用户指定的文件名是否已经存在？如果已经存在就在方法内部处理
                 isfileexists = self.fileexists(fullfilepath)
 
         # 文件名不为空,用户指定文件不存在，可以执行写入操作
-        print(isfileexists)
         if okPressed and filename != '' and not isfileexists:
+            self.statusbar.showMessage("add " + self.fileindex.lstrip(self.workdir) + os.sep + fullfilename)
             self.writedatatofile(fullfilepath)
 
         # 文件名为空，提示用户
@@ -163,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (reply == QMessageBox.No):
                 # 用户点击No，什么也不做
                 pass
-            self.statusbar.showMessage(self.fileindex.strip(self.workdir) + os.sep + filename + "文件已存在")
+            self.statusbar.showMessage(self.fileindex.lstrip(self.workdir) + "文件已存在")
             return True
 
         return False
@@ -200,9 +197,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "温馨提示", "请选择一个数据文件", QMessageBox.Yes, QMessageBox.Yes)
         elif os.path.isfile(self.fileindex):
             self.editdatafile(self.fileindex)
-            self.statusbar.showMessage("edit " + self.fileindex.strip(self.workdir))
 
-    def editdatafile(self,filepath):
+    def editdatafile(self, filepath):
+        self.statusbar.showMessage("edit " + self.fileindex.lstrip(self.workdir))
         # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         try:
             subprocess.call("notepad " + filepath, shell=True)
@@ -220,7 +217,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (reply == QMessageBox.Yes):
                 # 用户点击Yes，删除文件
                 os.remove(self.fileindex)
-                self.statusbar.showMessage("remove  " + self.fileindex.strip(self.workdir))
+                self.statusbar.showMessage("remove  " + self.fileindex.lstrip(self.workdir))
             if (reply == QMessageBox.No):
                 pass
 
