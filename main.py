@@ -21,6 +21,7 @@ testdata = "Wavelength	XK1Y08-100000.asd\n" \
            "350	 0.068295808533771 \n" \
            "351	 6.88503984835842E-02 \n" \
            "353	 6.96586664904809E-02 "
+color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k', )
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -34,6 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._initUI()
         self.plotcount = 0
         self.plotlimit = 5
+        self.statusbar.showMessage("欢迎使用，本次启动的工作目录为 " + self.workdir)
 
     def _initUI(self):
         # 载入UI.py
@@ -105,10 +107,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.plotcount >= self.plotlimit:
             QMessageBox.warning(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Yes, QMessageBox.Yes)
 
+        # 选取画笔颜色，防止溢出
+        colorindex = self.plotcount
+        if self.plotcount > len(color)-1:
+            colorindex = self.plotcount % len(color)-1
+
         try:
             # 载入数据，绘图
             data = np.loadtxt(self.fileindex, dtype=float, skiprows=1, usecols=1)
-            self.pyqtgraph.plot(data)
+            self.pyqtgraph.plot(data, pen=color[colorindex])
             # 在状态栏上显示当前绘图的文件和绘图总数
             self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir)
                                        + " ，当前绘图总数 " + str(self.plotcount + 1))
