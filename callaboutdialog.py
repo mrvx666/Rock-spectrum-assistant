@@ -38,6 +38,7 @@ class aboutDialogUI(QDialog,Ui_aboutDialog):
             if event.type() == QEvent.MouseButtonPress:
                 mouseEvent = QMouseEvent(event)
                 self.clickcount += 1
+                self.addresslabel.setText("你点击了图标" + str(self.clickcount) + "次")
                 if mouseEvent.button() == Qt.LeftButton:
                     if self.clickcount == 4:
                         QMessageBox.information(self, "学长真言", "你似乎发现了彩蛋\n再点击5次即可查看", QMessageBox.Yes,
@@ -48,6 +49,7 @@ class aboutDialogUI(QDialog,Ui_aboutDialog):
                             QDesktopServices.openUrl(QUrl(SB_jjh))
                         if (reply == QMessageBox.No):
                             pass
+                        self.addresslabel.setText("地址: 吉林省长春市建设街2199号   邮编:130061  电话:0431-88502278  传真:0431-88502055")
                         self.clickcount = 0
 
         return QDialog.eventFilter(self, watched, event)

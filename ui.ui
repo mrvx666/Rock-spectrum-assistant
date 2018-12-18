@@ -61,7 +61,7 @@
           </font>
          </property>
          <property name="text">
-          <string>窗口置顶</string>
+          <string>Always on top</string>
          </property>
         </widget>
        </item>
@@ -73,7 +73,7 @@
           </font>
          </property>
          <property name="text">
-          <string>自动载入</string>
+          <string>Autosave</string>
          </property>
         </widget>
        </item>
@@ -116,7 +116,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="browserButton">
+   <widget class="QPushButton" name="browseButton">
     <property name="geometry">
      <rect>
       <x>660</x>
@@ -131,7 +131,7 @@
      </font>
     </property>
     <property name="text">
-     <string>浏览</string>
+     <string>browse</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
@@ -195,7 +195,7 @@
  </customwidgets>
  <tabstops>
   <tabstop>clearButton</tabstop>
-  <tabstop>browserButton</tabstop>
+  <tabstop>browseButton</tabstop>
   <tabstop>treeView</tabstop>
   <tabstop>lineEdit</tabstop>
   <tabstop>checkBox_2</tabstop>

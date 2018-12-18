@@ -52,7 +52,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                         QMessageBox.No)
             if (reply == QMessageBox.Yes):
                 # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
-                self.on_browserButton_clicked()
+                self.on_browseButton_clicked()
             if (reply == QMessageBox.No):
                 # 用户点击No，设置提示
                 self.lineEdit.setText("请点击右侧按钮设置工作目录")
@@ -189,8 +189,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except IOError as e:
                 QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
 
-
-
     def editfile(self):
         if os.path.isdir(self.fileindex):
             # 打开的是一个目录而不是一个文件时提示用户
@@ -228,7 +226,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("workdir is " + self.workdir)
 
     @pyqtSlot()
-    def on_browserButton_clicked(self):
+    def on_browseButton_clicked(self):
             fileDialog = QFileDialog()
             fileDialog.setViewMode(QFileDialog.Detail)
             path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
