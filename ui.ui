@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>716</width>
-    <height>386</height>
+    <width>730</width>
+    <height>400</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>730</width>
+    <height>400</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>730</width>
+    <height>400</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Rock Spectrum Assistant</string>
@@ -40,62 +52,6 @@
     <property name="whatsThis">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;根据选择数据绘出的结果图&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>280</y>
-      <width>301</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QCheckBox" name="checkBox_2">
-         <property name="font">
-          <font>
-           <family>Microsoft YaHei UI</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>Always on top</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkBox">
-         <property name="font">
-          <font>
-           <family>Microsoft YaHei UI</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>Autosave</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QPushButton" name="clearButton">
-         <property name="font">
-          <font>
-           <family>Microsoft YaHei UI</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>Clear</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
    </widget>
    <widget class="QTreeView" name="treeView">
     <property name="geometry">
@@ -155,6 +111,60 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="clearButton">
+    <property name="geometry">
+     <rect>
+      <x>567</x>
+      <y>300</y>
+      <width>144</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>Clear</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>290</y>
+      <width>145</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>Always on top</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>320</y>
+      <width>145</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>Autosave</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -162,7 +172,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>716</width>
+     <width>730</width>
      <height>23</height>
     </rect>
    </property>
@@ -194,12 +204,9 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>clearButton</tabstop>
   <tabstop>browseButton</tabstop>
   <tabstop>treeView</tabstop>
   <tabstop>lineEdit</tabstop>
-  <tabstop>checkBox_2</tabstop>
-  <tabstop>checkBox</tabstop>
  </tabstops>
  <resources>
   <include location="apprcc.qrc"/>
