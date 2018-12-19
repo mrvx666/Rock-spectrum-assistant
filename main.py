@@ -4,15 +4,17 @@
 Module implementing MainWindow.
 """
 from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import pyqtSlot,Qt
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
                             QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
 import sys
 import os
 import subprocess
 import numpy as np
+
 from ui import Ui_MainWindow
 from callaboutdialog import aboutDialogUI
+from helppictureSliding import ImageSliderWidget
 
 defaultpathname = "data"
 defaultdataformat = ".txt"
@@ -27,18 +29,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent=parent)
+
         # 初始化工作目录
         self.workdir = os.getcwd() + os.sep + defaultpathname
+
         # 初始化文件指针
         self.fileindex = self.workdir
-        self._initUI()
-        self.plotcount = 0
-        self.plotlimit = 5
-        self.statusbar.showMessage("欢迎使用，本次启动的工作目录为 " + self.workdir)
 
-    def _initUI(self):
-        # 载入UI.py
-        self.setupUi(self)
+        # 初始化UI
+        self._initUI()
+
         # 初始化文件管理器
         self.model = QFileSystemModel()
 
@@ -55,22 +55,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.on_browseButton_clicked()
             if (reply == QMessageBox.No):
                 # 用户点击No，设置提示
-                self.lineEdit.setText("请点击右侧按钮设置工作目录")
+                self.lineEdit.setText("Click the right side button to set work dir")
 
         # 设置工作目录
         self.changworkdir(self.workdir)
 
+        self.plotcount = 0
+        self.plotlimit = 5
+        self.statusbar.showMessage("Welcome to use rock spectrum assistant")
+
+    def _initUI(self):
+        # 载入UI.py
+        self.setupUi(self)
+
         # 菜单栏关联子窗体
         self.aboutwin = aboutDialogUI()
-        self.About.triggered.connect(self.about)
+        self.About.triggered.connect(self.aboutthisprogram)
+
+        self.helpwin = ImageSliderWidget()
+        self.Help.triggered.connect(self.helpmanual)
 
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
         # 窗口置顶
         #self.setWindowFlags(Qt.WindowStaysOnTopHint)
-        # 静止窗口最大化，这个代码使用后会使得关闭和窗口最大化按钮同时失效
-        #self.setWindowFlags(Qt.WindowMinimizeButtonHint)
 
     def changworkdir(self, path):
         # 设置treeview工作目录，代码顺序不能颠倒
@@ -79,7 +88,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.treeView.setRootIndex(self.model.index(path))
         # 重设工作目录
         self.workdir = self.model.rootPath()
-        self.lineEdit.setText(self.workdir)
         # 更换目录做一次清空
         self.on_clearButton_clicked()
 
@@ -93,11 +101,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         plot = menu.addAction("plot")
         plot.triggered.connect(self.plotdatafile)
-        addfile = menu.addAction("addfile")
+        addfile = menu.addAction("add")
         addfile.triggered.connect(self.addfile)
-        editfile = menu.addAction("editfile")
+        editfile = menu.addAction("edit")
         editfile.triggered.connect(self.editfile)
-        removefile = menu.addAction("removefile")
+        removefile = menu.addAction("remove")
         removefile.triggered.connect(self.removefile)
 
         cursor = QCursor()
@@ -105,7 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def plotdatafile(self):
         # 绘图板上图形过多，提示用户
-        if self.plotcount >= self.plotlimit:
+        if self.plotcount == self.plotlimit:
             QMessageBox.warning(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Yes, QMessageBox.Yes)
 
         # 选取画笔颜色，防止溢出
@@ -223,7 +231,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_clearButton_clicked(self):
         self.pyqtgraph.clear()
         self.plotcount = 0
-        self.statusbar.showMessage("workdir is " + self.workdir)
+        self.statusbar.showMessage("clear plotwidget ")
 
     @pyqtSlot()
     def on_browseButton_clicked(self):
@@ -232,11 +240,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
             self.changworkdir(path)
             self.lineEdit.setText(path)
-            self.statusbar.showMessage("change work dir  " + path)
+            self.statusbar.showMessage("change work dir to " + path)
 
-    def about(self):
+    def aboutthisprogram(self):
         self.aboutwin.show()
         self.statusbar.showMessage("about this program")
+
+    def helpmanual(self):
+        self.helpwin.show()
+        self.statusbar.showMessage("start help Manual")
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示

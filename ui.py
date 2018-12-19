@@ -81,6 +81,9 @@ class Ui_MainWindow(object):
         font.setFamily("Microsoft YaHei UI")
         self.About.setFont(font)
         self.About.setObjectName("About")
+        self.Help = QtWidgets.QAction(MainWindow)
+        self.Help.setObjectName("Help")
+        self.menuSetting.addAction(self.Help)
         self.menuSetting.addAction(self.About)
         self.menuBar.addAction(self.menuSetting.menuAction())
 
@@ -99,6 +102,7 @@ class Ui_MainWindow(object):
         self.checkBox.setText(_translate("MainWindow", "Autosave"))
         self.menuSetting.setTitle(_translate("MainWindow", "Setting"))
         self.About.setText(_translate("MainWindow", "About"))
+        self.Help.setText(_translate("MainWindow", "Help"))
 
 from pyqtgraph import PlotWidget
 import apprcc_rc

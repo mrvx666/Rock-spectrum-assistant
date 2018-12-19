@@ -180,6 +180,7 @@
     <property name="title">
      <string>Setting</string>
     </property>
+    <addaction name="Help"/>
     <addaction name="About"/>
    </widget>
    <addaction name="menuSetting"/>
@@ -192,6 +193,11 @@
     <font>
      <family>Microsoft YaHei UI</family>
     </font>
+   </property>
+  </action>
+  <action name="Help">
+   <property name="text">
+    <string>Help</string>
    </property>
   </action>
  </widget>

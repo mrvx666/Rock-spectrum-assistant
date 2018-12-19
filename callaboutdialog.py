@@ -44,7 +44,7 @@ class aboutDialogUI(QDialog,Ui_aboutDialog):
                         QMessageBox.information(self, "学长真言", "你似乎发现了彩蛋\n再点击5次即可查看", QMessageBox.Yes,
                                                 QMessageBox.Yes)
                     if self.clickcount == 9:
-                        reply = QMessageBox.information(self, "学长真言", "金锦花是傻逼，萨比，撒币\n点击确定查看九评金锦花", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+                        reply = QMessageBox.information(self, "学长真言", "金锦花是傻逼\n点击确定查看九评金锦花", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
                         if (reply == QMessageBox.Yes):
                             QDesktopServices.openUrl(QUrl(SB_jjh))
                         if (reply == QMessageBox.No):
