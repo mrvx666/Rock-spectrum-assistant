@@ -36,6 +36,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 初始化文件指针
         self.fileindex = self.workdir
 
+        # 初始化子窗口错误提示，正常载入不会用到
+        self.childwinerror = ''
+
         # 初始化UI
         self._initUI()
 
@@ -62,18 +65,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.plotcount = 0
         self.plotlimit = 5
-        self.statusbar.showMessage("Welcome to use rock spectrum assistant")
+
+        if self.childwinerror == '':
+            self.statusbar.showMessage("Welcome to use rock spectrum assistant")
+        else:
+            self.statusbar.showMessage(self.childwinerror)
 
     def _initUI(self):
         # 载入UI.py
         self.setupUi(self)
 
         # 菜单栏关联子窗体
-        self.aboutwin = aboutDialogUI()
-        self.About.triggered.connect(self.aboutthisprogram)
+        try:
+            self.aboutwin = aboutDialogUI()
+            self.About.triggered.connect(self.aboutthisprogram)
 
-        self.helpwin = ImageSliderWidget()
-        self.Help.triggered.connect(self.helpmanual)
+            self.helpwin = ImageSliderWidget()
+            self.Help.triggered.connect(self.helpmanual)
+        except:
+            self.childwinerror = "子窗体初始化失败"
 
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -248,6 +258,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def helpmanual(self):
         self.helpwin.show()
+        self.helpwin.autoStart()
         self.statusbar.showMessage("start help Manual")
 
     def closeEvent(self, QCloseEvent):

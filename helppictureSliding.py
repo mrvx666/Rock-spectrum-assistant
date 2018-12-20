@@ -8,6 +8,9 @@ from PyQt5.QtWidgets import QWidget, QLabel
 
 from UiImageSlider import Ui_Form  # @UnresolvedImport
 
+import apprcc_rc
+
+helpmanualpage = 5
 
 class ImageSliderWidget(QWidget, Ui_Form):
 
@@ -21,12 +24,12 @@ class ImageSliderWidget(QWidget, Ui_Form):
         self.closeButton.clicked.connect(self.close)
 
         # 添加图片页面
-        for name in os.listdir('helpImages'):
+        for num in range(1, helpmanualpage+1, 1):
             label = QLabel(self.stackedWidget)
             label.setScaledContents(True)
-            label.setPixmap(QPixmap('helpImages/' + name))
+            pic = ':/image/help (' + str(num) + ').png'
+            label.setPixmap(QPixmap(pic))
             self.stackedWidget.addWidget(label)
-        self.autoStart()
 
     def autoStart(self):
         self.stackedWidget.autoStart()
