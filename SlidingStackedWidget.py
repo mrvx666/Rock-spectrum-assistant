@@ -1,24 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Created on 2018年11月24日
-author: Irony
-site: https://pyqt5.com , https://github.com/892768447
-email: 892768447@qq.com
-file:
-description: 参考 http://qt.shoutwiki.com/wiki/Extending_QStackedWidget_for_sliding_page_animations_in_Qt
-"""
 from PyQt5.QtCore import Qt, pyqtProperty, QEasingCurve, QPoint, \
     QPropertyAnimation, QParallelAnimationGroup, QTimer
 from PyQt5.QtWidgets import QStackedWidget
-
-
-__Author__ = """By: Irony
-QQ: 892768447
-Email: 892768447@qq.com"""
-__Copyright__ = 'Copyright (c) 2018 Irony'
-__Version__ = 1.0
 
 
 class SlidingStackedWidget(QStackedWidget):

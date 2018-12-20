@@ -1,16 +1,12 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-import os
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
-
-from UiImageSlider import Ui_Form  # @UnresolvedImport
-
+from UiImageSlider import Ui_Form
 import apprcc_rc
 
 helpmanualpage = 5
+
 
 class ImageSliderWidget(QWidget, Ui_Form):
 

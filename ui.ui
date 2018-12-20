@@ -129,7 +129,7 @@
      <string>Clear</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="AlwaysOnTopcheckbox">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -147,7 +147,7 @@
      <string>Always on top</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="AutoSavecheckbox">
     <property name="geometry">
      <rect>
       <x>410</x>

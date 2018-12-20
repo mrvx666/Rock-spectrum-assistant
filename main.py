@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Module implementing MainWindow.
+这是RSA的主窗体，主要的业务都在这里完成。
 """
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import pyqtSlot, Qt
@@ -66,7 +66,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.changworkdir(self.workdir)
 
         if self.childwinerror == '':
-            self.statusbar.showMessage("Welcome to use rock spectrum assistant")
+            self.statusbar.showMessage("Welcome to Rock Spectrum Assistant")
         # 提示用户子窗体因为各种理由gg
         else:
             self.statusbar.showMessage(self.childwinerror)
