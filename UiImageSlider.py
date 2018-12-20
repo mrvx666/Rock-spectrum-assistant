@@ -12,6 +12,8 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(656, 612)
+        Form.setMinimumSize(QtCore.QSize(656, 612))
+        Form.setMaximumSize(QtCore.QSize(656, 612))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/image/JLUgeo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Form.setWindowIcon(icon)
