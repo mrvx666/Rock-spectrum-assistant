@@ -132,16 +132,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.plotcount > len(color)-1:
             colorindex = self.plotcount % len(color)-1
 
-        try:
-            # 载入数据，绘图
-            data = np.loadtxt(self.fileindex, dtype=float, skiprows=1, usecols=1)
-            self.pyqtgraph.plot(data, pen=color[colorindex])
-            # 在状态栏上显示当前绘图的文件和绘图总数
-            self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir)
-                                       + " ，当前绘图总数 " + str(self.plotcount + 1))
-            self.plotcount += 1
-        except:
-            QMessageBox.critical(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
+        # 判断是文件指针指向的是一个目录还是文件
+        if os.path.isdir(self.fileindex) or self.fileindex == "":
+            # 指向一个目录，提示用户
+            QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
+
+        elif os.path.isfile(self.fileindex):
+            # 指向一个文件，尝试读取数据
+            try:
+                # 载入数据，如果数据格式有变化这里会报错
+                data = np.loadtxt(self.fileindex, dtype=float, skiprows=1, usecols=1)
+                # 绘图
+                self.pyqtgraph.plot(data, pen=color[colorindex])
+                # 在状态栏上显示当前绘图的文件和绘图总数
+                self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir)
+                                           + " ，当前绘图总数 " + str(self.plotcount + 1))
+                self.plotcount += 1
+            except:
+                QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -187,7 +195,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if (reply == QMessageBox.Yes):
                 # 用户点击Yes，进入编辑模式
                 self.editdatafile(filepath)
-            if (reply == QMessageBox.CancelC):
+            if (reply == QMessageBox.Cancel):
                 # 用户点击No，什么也不做
                 pass
             self.statusbar.showMessage(self.fileindex.lstrip(self.workdir) + filename + " 文件已存在")
@@ -211,7 +219,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def editfile(self):
         if os.path.isdir(self.fileindex):
             # 打开的是一个目录而不是一个文件时提示用户
-            QMessageBox.warning(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
+            QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
         elif os.path.isfile(self.fileindex):
             self.editdatafile(self.fileindex)
 
