@@ -38,6 +38,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 初始化子窗口错误提示，正常载入不会用到
         self.childwinerror = ''
+        self.plotcount = 0
+        self.plotlimit = 5
 
         # 初始化UI
         self._initUI()
@@ -63,11 +65,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 设置工作目录
         self.changworkdir(self.workdir)
 
-        self.plotcount = 0
-        self.plotlimit = 5
-
         if self.childwinerror == '':
             self.statusbar.showMessage("Welcome to use rock spectrum assistant")
+        # 提示用户子窗体因为各种理由gg
         else:
             self.statusbar.showMessage(self.childwinerror)
 
@@ -75,13 +75,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 载入UI.py
         self.setupUi(self)
 
-        # 菜单栏关联子窗体
+        # 载入子窗体
         try:
             self.aboutwin = aboutDialogUI()
             self.About.triggered.connect(self.aboutthisprogram)
 
             self.helpwin = ImageSliderWidget()
             self.Help.triggered.connect(self.helpmanual)
+        # 当子窗体因为各种理由gg了，确保主窗体可以正常启动
         except:
             self.childwinerror = "子窗体初始化失败"
 
@@ -259,7 +260,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def helpmanual(self):
         self.helpwin.show()
         self.helpwin.autoStart()
-        self.statusbar.showMessage("start help Manual")
+        self.statusbar.showMessage("start help manual")
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
