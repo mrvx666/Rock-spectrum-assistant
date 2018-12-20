@@ -53,12 +53,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.lineEdit.setText(self.workdir)
         else:
             # 不存在，提示用户希望进行的操作
-            reply = QMessageBox.warning(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置", QMessageBox.Yes | QMessageBox.No,
-                                        QMessageBox.No)
+            reply = QMessageBox.question(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置", QMessageBox.Yes | QMessageBox.Cancel,
+                                        QMessageBox.Cancel)
             if (reply == QMessageBox.Yes):
                 # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
                 self.on_browseButton_clicked()
-            if (reply == QMessageBox.No):
+            if (reply == QMessageBox.Cancel):
                 # 用户点击No，设置提示
                 self.lineEdit.setText("Click the right side button to set work dir")
 
@@ -84,7 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.Help.triggered.connect(self.helpmanual)
         # 当子窗体因为各种理由gg了，确保主窗体可以正常启动
         except:
-            self.childwinerror = "子窗体初始化失败"
+            self.childwinerror = "child window initialization failed"
 
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -125,7 +125,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def plotdatafile(self):
         # 绘图板上图形过多，提示用户
         if self.plotcount == self.plotlimit:
-            QMessageBox.warning(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Yes, QMessageBox.Yes)
+            QMessageBox.information(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Close, QMessageBox.Close)
 
         # 选取画笔颜色，防止溢出
         colorindex = self.plotcount
@@ -141,7 +141,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                        + " ，当前绘图总数 " + str(self.plotcount + 1))
             self.plotcount += 1
         except:
-            QMessageBox.critical(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Yes, QMessageBox.Yes)
+            QMessageBox.critical(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -172,25 +172,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.writedatatofile(fullfilepath)
 
         # 文件名为空，提示用户
-        elif filename == '':
-            QMessageBox.warning(self, "温馨提示", "未输入文件名", QMessageBox.Yes, QMessageBox.Yes)
+        elif okPressed and filename == '':
+            QMessageBox.information(self, "温馨提示", "未输入文件名", QMessageBox.Close, QMessageBox.Close)
 
     def fileexists(self, filepath):
-        # 从传入文件指针获取文件名
+        # 从传入文件路径获取文件名
         (path, filename) = os.path.split(filepath)
 
         if os.path.exists(filepath):
             # 文件存在，询问用户希望的操作模式
-            reply = QMessageBox.warning(self, "温馨提示", filename + "文件在目录\n" + path + "\n已经存在，是否进入编辑模式",
-                                        QMessageBox.Yes | QMessageBox.No,
-                                        QMessageBox.No)
+            reply = QMessageBox.question(self, "温馨提示", filename + "文件在目录\n" + path + "\n已经存在，是否进入编辑模式",
+                                        QMessageBox.Yes | QMessageBox.Cancel,
+                                        QMessageBox.Cancel)
             if (reply == QMessageBox.Yes):
                 # 用户点击Yes，进入编辑模式
                 self.editdatafile(filepath)
-            if (reply == QMessageBox.No):
+            if (reply == QMessageBox.CancelC):
                 # 用户点击No，什么也不做
                 pass
-            self.statusbar.showMessage(self.fileindex.lstrip(self.workdir) + "文件已存在")
+            self.statusbar.showMessage(self.fileindex.lstrip(self.workdir) + filename + " 文件已存在")
             return True
 
         return False
@@ -206,12 +206,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 f.close()
                 self.statusbar.showMessage("write " + filepath.lstrip(self.workdir) + " 写入成功")
             except IOError as e:
-                QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
+                QMessageBox.critical(self, "警告", e, QMessageBox.Close, QMessageBox.Close)
 
     def editfile(self):
         if os.path.isdir(self.fileindex):
             # 打开的是一个目录而不是一个文件时提示用户
-            QMessageBox.warning(self, "温馨提示", "请选择一个数据文件", QMessageBox.Yes, QMessageBox.Yes)
+            QMessageBox.warning(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
         elif os.path.isfile(self.fileindex):
             self.editdatafile(self.fileindex)
 
@@ -221,21 +221,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             subprocess.call("notepad " + filepath, shell=True)
         except Exception as e:
-            QMessageBox.critical(self, "警告", e, QMessageBox.Yes, QMessageBox.Yes)
+            QMessageBox.critical(self, "警告", e, QMessageBox.Close, QMessageBox.Close)
 
     def removefile(self):
         if os.path.isdir(self.fileindex):
-            QMessageBox.warning(self, "温馨提示", "您所选择的是一个文件夹\n出于数据安全考虑\n本程序不提供删除文件夹功能", QMessageBox.Yes, QMessageBox.Yes)
+            QMessageBox.question(self, "温馨提示", "您所选择的是一个文件夹\n出于数据安全考虑\n本程序不提供删除文件夹功能", QMessageBox.Close, QMessageBox.Close)
         elif os.path.isfile(self.fileindex):
             (filepath, filename) = os.path.split(self.fileindex)
             reply = QMessageBox.warning(self, "温馨提示", "是否确定删除文件"+filename,
-                                        QMessageBox.Yes | QMessageBox.No,
-                                        QMessageBox.No)
+                                        QMessageBox.Yes | QMessageBox.Cancel,
+                                        QMessageBox.Cancel)
             if (reply == QMessageBox.Yes):
                 # 用户点击Yes，删除文件
                 os.remove(self.fileindex)
                 self.statusbar.showMessage("remove  " + self.fileindex.lstrip(self.workdir))
-            if (reply == QMessageBox.No):
+            if (reply == QMessageBox.Cancel):
                 pass
 
     @pyqtSlot()
@@ -264,10 +264,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
-        reply = QMessageBox.warning(self, "温馨提示", "即将退出, 确定？", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        reply = QMessageBox.warning(self, "温馨提示", "即将退出, 确定？", QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Yes)
         if (reply == QMessageBox.Yes):
             QCloseEvent.accept()
-        if (reply == QMessageBox.No):
+        if (reply == QMessageBox.Cancel):
             QCloseEvent.ignore()
 
 
