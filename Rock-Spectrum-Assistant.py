@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
 import sys
 import os
 import subprocess
-import numpy as np
+import pandas as pd
 
 from ui import Ui_MainWindow
 from callaboutdialog import aboutDialogUI
@@ -143,30 +143,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             data, axis = [], []
             try:
                 # 载入数据，如果数据格式有变化这里会报错
-                data = np.loadtxt(self.fileindex, dtype=float, skiprows=1, usecols=1)
-                axis = np.loadtxt(self.fileindex, dtype=int, skiprows=1, usecols=0)
+                data = pd.read_csv(self.fileindex, dtype=float, sep='\t', index_col=0)
 
             except:
                 QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
 
-
-
+            xdict = dict(enumerate(data.index))
+            axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), 500)]
+            xax = self.pyqtgraph.getPlotItem().getAxis('bottom')
+            xax.setTicks([axis_x_data, xdict.items()])
 
             try:
-
-                # TODO: 坐标轴数据，目前显示效果较差，且容易造成程序卡顿
-                xax = self.pyqtgraph.getPlotItem().getAxis('bottom')
-                ticks = [list(zip(range(axis.__len__()), axis))]
-                xax.setTicks(ticks)
-
-
                 # 绘图
-                self.pyqtgraph.plot(data, pen=color[colorindex])
+                self.pyqtgraph.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
 
                 # 在状态栏上显示当前绘图的文件和绘图总数
                 self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir) + " ，当前绘图总数 "
                                            + str(self.plotcount + 1))
+
                 self.plotcount += 1
+
             except:
                 QMessageBox.information(self, "警告", "绘图失败", QMessageBox.Close, QMessageBox.Close)
 
@@ -279,7 +275,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.changworkdir(path)
             self.lineEdit.setText(path)
             self.statusbar.showMessage("change work dir to " + path)
-
 
     def aboutthisprogram(self):
         self.aboutwin.show()
