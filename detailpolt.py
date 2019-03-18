@@ -1,14 +1,12 @@
 import pyqtgraph as pg
 import pandas as pd
 import sys
-from PyQt5.QtWidgets import QMessageBox
+
 ticksspacing = 500
 
 fileinex = sys.argv[1]
-try:
-    data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
-except:
-    QMessageBox.information("警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
+
+data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
 
 # 初始化窗口
 app = pg.QtGui.QApplication([])
