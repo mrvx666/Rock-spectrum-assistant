@@ -11,6 +11,7 @@ import sys
 import os
 import subprocess
 import pandas as pd
+import pyqtgraph as pg
 
 from ui import Ui_MainWindow
 from callaboutdialog import aboutDialogUI
@@ -23,6 +24,7 @@ testdata = "Wavelength	XK1Y08-100000.asd\n" \
            "351	 6.88503984835842E-02 \n" \
            "353	 6.96586664904809E-02 "
 color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k', )
+ticksspacing = 500
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -62,9 +64,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # 用户点击No，设置提示
                 self.lineEdit.setText("Click the right side button to set work dir")
 
+        # 获取pyqtgraph绘图对象
+        self.poltiteam = self.pyqtgraph.getPlotItem()
+
         # 设置工作目录
         self.changworkdir(self.workdir)
 
+        # 子窗体载入失败
         if self.childwinerror == '':
             self.statusbar.showMessage("Welcome to Rock Spectrum Assistant")
         # 提示用户子窗体因为各种理由gg
@@ -89,8 +95,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
-        # 窗口置顶
-        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
+
+        # checkbox相关设置
+        self.alwaysontopcheckbox.stateChanged.connect(lambda: self.alwaysontopcheckboxstatechange(self.alwaysontopcheckbox))
 
     def changworkdir(self, path):
         # 设置treeview工作目录，代码顺序不能颠倒
@@ -111,7 +118,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         menu = QMenu()
 
         plot = menu.addAction("plot")
-        plot.triggered.connect(self.plotdatafile)
+        plot.triggered.connect(self.plot)
         addfile = menu.addAction("add")
         addfile.triggered.connect(self.addfile)
         editfile = menu.addAction("edit")
@@ -122,7 +129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         cursor = QCursor()
         menu.exec_(cursor.pos())
 
-    def plotdatafile(self):
+    def plot(self):
         # 绘图板上图形过多，提示用户
         if self.plotcount == self.plotlimit:
             QMessageBox.information(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Close, QMessageBox.Close)
@@ -140,22 +147,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 指向一个文件，尝试读取数据
         elif os.path.isfile(self.fileindex):
             # 初始化数据表
-            data, axis = [], []
+            data = []
             try:
-                # 载入数据，如果数据格式有变化这里会报错
-                data = pd.read_csv(self.fileindex, dtype=float, sep='\t', index_col=0)
-
-            except:
-                QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
-
-            xdict = dict(enumerate(data.index))
-            axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), 500)]
-            xax = self.pyqtgraph.getPlotItem().getAxis('bottom')
-            xax.setTicks([axis_x_data, xdict.items()])
-
-            try:
-                # 绘图
-                self.pyqtgraph.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
+                # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
+                if self.detailpoltcheckbox.isChecked():
+                    self.detailpolt(self.fileindex, colorindex)
+                else:
+                    self.normalpolt(self.fileindex, colorindex)
 
                 # 在状态栏上显示当前绘图的文件和绘图总数
                 self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir) + " ，当前绘图总数 "
@@ -165,6 +163,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             except:
                 QMessageBox.information(self, "警告", "绘图失败", QMessageBox.Close, QMessageBox.Close)
+
+    def normalpolt(self,fileinex,colorindex):
+        # 载入数据，如果数据格式有变化这里会报错
+        try:
+            data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
+        except:
+            QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
+        # 将数据表索引（波长）转换为绘图时的坐标轴数据
+        xdict = dict(enumerate(data.index))
+        axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), ticksspacing)]
+        xax = self.poltiteam.getAxis('bottom')
+        xax.setTicks([axis_x_data, xdict.items()])
+        self.pyqtgraph.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
+
+    def detailpolt(self,fileindex,colorindex):
+        print("link start")
+        os.system("python ./detailpolt.py %s" % fileindex)
+
+    def alwaysontopcheckboxstatechange(self,checkbox):
+        pass
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
