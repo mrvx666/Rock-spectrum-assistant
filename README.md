@@ -46,3 +46,7 @@ https://github.com/vfxpipeline/filebrowser
 4.documentation for pyqtgraph
 
 http://www.pyqtgraph.org/documentation/
+
+5.pyqtgraph数据可视化3：使用PyQtGraph绘制精美折线图——以上证指数为例
+
+https://zmister.com/archives/220.html
