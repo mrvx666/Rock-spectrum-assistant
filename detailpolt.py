@@ -22,7 +22,7 @@ label = pg.TextItem()
 plot.addItem(label)
 
 # 绘图与设置坐标轴
-plot.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values)
+plot.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values, pen='b')
 plot.setLabel(axis='left', text='wavevalues')
 plot.setLabel(axis='bottom', text='wavelength')
 
