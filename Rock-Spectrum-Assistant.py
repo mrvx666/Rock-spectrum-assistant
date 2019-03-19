@@ -11,7 +11,7 @@ import sys
 import os
 import subprocess
 import pandas as pd
-import pyqtgraph as pg
+
 
 from ui import Ui_MainWindow
 from callaboutdialog import aboutDialogUI
@@ -55,12 +55,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.lineEdit.setText(self.workdir)
         else:
             # 不存在，提示用户希望进行的操作
-            reply = QMessageBox.question(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置", QMessageBox.Yes | QMessageBox.Cancel,
-                                        QMessageBox.Cancel)
-            if (reply == QMessageBox.Yes):
+            reply = QMessageBox.question(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置",
+                                         QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+            if reply == QMessageBox.Yes:
                 # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
                 self.on_browseButton_clicked()
-            if (reply == QMessageBox.Cancel):
+            if reply == QMessageBox.Cancel:
                 # 用户点击No，设置提示
                 self.lineEdit.setText("Click the right side button to set work dir")
 
@@ -97,6 +97,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.treeView.customContextMenuRequested.connect(self.context_menu)
 
         # checkbox相关设置
+        self.detailpoltcheckbox.stateChanged.connect(lambda: self.detailpoltchechboxstatechange(self.detailpoltcheckbox))
         self.alwaysontopcheckbox.stateChanged.connect(lambda: self.alwaysontopcheckboxstatechange(self.alwaysontopcheckbox))
 
     def changworkdir(self, path):
@@ -107,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 重设工作目录
         self.workdir = self.model.rootPath()
         # 更换目录做一次清空
-        self.on_clearButton_clicked()
+        self.on_clearbutton_clicked()
 
     def context_menu(self):
         # 设定鼠标点击位置的指针
@@ -134,11 +135,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.plotcount == self.plotlimit:
             QMessageBox.information(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Close, QMessageBox.Close)
 
-        # 选取画笔颜色，防止溢出
-        colorindex = self.plotcount
-        if self.plotcount > len(color)-1:
-            colorindex = self.plotcount % len(color)-1
-
         # 判断是文件指针指向的是一个目录还是文件
         if os.path.isdir(self.fileindex) or self.fileindex == "":
             # 指向一个目录，提示用户
@@ -146,14 +142,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # 指向一个文件，尝试读取数据
         elif os.path.isfile(self.fileindex):
-            # 初始化数据表
-            data = []
             try:
                 # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
                 if self.detailpoltcheckbox.isChecked():
-                    self.detailpolt(self.fileindex, colorindex)
+                    self.detailpolt(self.fileindex)
                 else:
-                    self.normalpolt(self.fileindex, colorindex)
+                    self.normalpolt(self.fileindex)
 
                 # 在状态栏上显示当前绘图的文件和绘图总数
                 self.statusbar.showMessage("plot " + self.fileindex.lstrip(self.workdir) + " ，当前绘图总数 "
@@ -164,25 +158,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except:
                 QMessageBox.information(self, "警告", "绘图失败", QMessageBox.Close, QMessageBox.Close)
 
-    def normalpolt(self,fileinex,colorindex):
+    def normalpolt(self,fileinex):
+        # 选取画笔颜色，防止溢出
+        colorindex = self.plotcount
+        if self.plotcount > len(color) - 1:
+            colorindex = self.plotcount % len(color) - 1
+
         # 载入数据，如果数据格式有变化这里会报错
         try:
             data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
+            # 将数据表索引（波长）转换为绘图时的坐标轴数据
+            xdict = dict(enumerate(data.index))
+            axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), ticksspacing)]
+            xax = self.poltiteam.getAxis('bottom')
+            xax.setTicks([axis_x_data, xdict.items()])
+            self.pyqtgraph.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
         except:
             QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
-        # 将数据表索引（波长）转换为绘图时的坐标轴数据
-        xdict = dict(enumerate(data.index))
-        axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), ticksspacing)]
-        xax = self.poltiteam.getAxis('bottom')
-        xax.setTicks([axis_x_data, xdict.items()])
-        self.pyqtgraph.plot(x=list(xdict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
 
-    def detailpolt(self,fileindex,colorindex):
-        print("link start")
-        os.system("python ./detailpolt.py %s" % fileindex)
+    def detailpolt(self,fileindex):
+        subprocess.call("python ./detailpolt.py %s" % fileindex, shell=True)
+
+    def detailpoltchechboxstatechange(self,checkbox):
+        if checkbox.isChecked():
+            QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击polt来使用", QMessageBox.Close, QMessageBox.Close)
 
     def alwaysontopcheckboxstatechange(self,checkbox):
-        pass
+        if checkbox.isChecked():
+            QMessageBox.information(self, "提示", "这个功能还在开发哦\n请稍等呢", QMessageBox.Close, QMessageBox.Close)
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -223,12 +226,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if os.path.exists(filepath):
             # 文件存在，询问用户希望的操作模式
             reply = QMessageBox.question(self, "温馨提示", filename + "文件在目录\n" + path + "\n已经存在，是否进入编辑模式",
-                                        QMessageBox.Yes | QMessageBox.Cancel,
-                                        QMessageBox.Cancel)
-            if (reply == QMessageBox.Yes):
+                                        QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+            if reply == QMessageBox.Yes:
                 # 用户点击Yes，进入编辑模式
                 self.editdatafile(filepath)
-            if (reply == QMessageBox.Cancel):
+            if reply == QMessageBox.Cancel:
                 # 用户点击No，什么也不做
                 pass
             self.statusbar.showMessage(self.fileindex.lstrip(self.workdir) + filename + " 文件已存在")
@@ -260,7 +262,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("edit " + self.fileindex.lstrip(self.workdir))
         # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         try:
-            subprocess.call("notepad " + filepath, shell=True)
+            subprocess.call("notepad %s" % filepath, shell=True)
         except Exception as e:
             QMessageBox.critical(self, "警告", e, QMessageBox.Close, QMessageBox.Close)
 
@@ -272,23 +274,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             reply = QMessageBox.warning(self, "温馨提示", "是否确定删除文件"+filename,
                                         QMessageBox.Yes | QMessageBox.Cancel,
                                         QMessageBox.Cancel)
-            if (reply == QMessageBox.Yes):
+            if reply == QMessageBox.Yes:
                 # 用户点击Yes，删除文件
                 os.remove(self.fileindex)
                 self.statusbar.showMessage("remove  " + self.fileindex.lstrip(self.workdir))
-            if (reply == QMessageBox.Cancel):
+            if reply == QMessageBox.Cancel:
                 pass
 
     @pyqtSlot()
-    def on_clearButton_clicked(self):
+    def on_clearbutton_clicked(self):
         self.pyqtgraph.clear()
         self.plotcount = 0
         self.statusbar.showMessage("clear plotwidget ")
 
     @pyqtSlot()
-    def on_browseButton_clicked(self):
-            fileDialog = QFileDialog()
-            fileDialog.setViewMode(QFileDialog.Detail)
+    def on_browsebutton_clicked(self):
+            filedialog = QFileDialog()
+            filedialog.setViewMode(QFileDialog.Detail)
             path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
             self.changworkdir(path)
             self.lineEdit.setText(path)
@@ -306,9 +308,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
         reply = QMessageBox.warning(self, "温馨提示", "即将退出, 确定？", QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Yes)
-        if (reply == QMessageBox.Yes):
+        if reply == QMessageBox.Yes:
             QCloseEvent.accept()
-        if (reply == QMessageBox.Cancel):
+        if reply == QMessageBox.Cancel:
             QCloseEvent.ignore()
 
 

@@ -72,7 +72,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="browseButton">
+   <widget class="QPushButton" name="browsebutton">
     <property name="geometry">
      <rect>
       <x>660</x>
@@ -111,7 +111,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="clearButton">
+   <widget class="QPushButton" name="clearbutton">
     <property name="geometry">
      <rect>
       <x>567</x>
@@ -129,7 +129,7 @@
      <string>Clear</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="AlwaysOnTopcheckbox">
+   <widget class="QCheckBox" name="detailpoltcheckbox">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -144,10 +144,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Always on top</string>
+     <string>detailpolt</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="AutoSavecheckbox">
+   <widget class="QCheckBox" name="alwaysontopcheckbox">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -162,7 +162,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Autosave</string>
+     <string>AlwaysOnTop</string>
     </property>
    </widget>
   </widget>
@@ -210,7 +210,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>browseButton</tabstop>
+  <tabstop>browsebutton</tabstop>
   <tabstop>treeView</tabstop>
   <tabstop>lineEdit</tabstop>
  </tabstops>
