@@ -2,8 +2,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
 from utils.helppictureSliding.UiImageSlider import Ui_Form
 import apprcc_rc
-import os
-helpmanualpage = 5
+helpmanualpage = 6
 
 
 class ImageSliderWidget(QWidget, Ui_Form):
