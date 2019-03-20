@@ -37,20 +37,24 @@ TO DO List：
 
 https://github.com/cxinping/PyQt5
 
-2.PyQt Examples（PyQt各种测试和例子） PyQt4 PyQt5,多页面切换动画
-
-https://github.com/PyQt5/PyQt/tree/master/%E5%8A%A8%E7%94%BB/%E5%A4%9A%E9%A1%B5%E9%9D%A2%E5%88%87%E6%8D%A2%E5%8A%A8%E7%94%BB
-
-3.Create file browser in python and Qt (PyQt5 or PySide2 QTreeView and QFileSystemModel)
+2.Create file browser in python and Qt (PyQt5 or PySide2 QTreeView and QFileSystemModel)
 
 https://www.youtube.com/watch?v=4PkPezdpO90
 
 https://github.com/vfxpipeline/filebrowser
 
-4.documentation for pyqtgraph
+3.documentation for pyqtgraph
 
 http://www.pyqtgraph.org/documentation/
 
-5.pyqtgraph数据可视化3：使用PyQtGraph绘制精美折线图——以上证指数为例
+4.pyqtgraph数据可视化3：使用PyQtGraph绘制精美折线图——以上证指数为例
 
 https://zmister.com/archives/220.html
+
+5.PyQt Examples（PyQt各种测试和例子） 页面切换/图片轮播动画
+
+https://github.com/PyQt5/PyQt/tree/master/QPropertyAnimation
+
+
+
+
