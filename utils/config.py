@@ -7,6 +7,8 @@ workdir = "data"
 data_filename_extension = ".txt"
 # 绘图间隔
 ticksspacing = 500
+# 帮助手册图片数目
+help_manual_page = 6
 # 示例数据
 testdata = "Wavelength	XK1Y08-100000.asd\n" \
            "350	 0.068295808533771 \n" \
@@ -24,6 +26,10 @@ def get_default_data_filename_extension():
 
 def get_ticks_spacing():
     return ticksspacing
+
+
+def get_help_manual_page():
+    return int(help_manual_page)
 
 
 def get_testdata():
