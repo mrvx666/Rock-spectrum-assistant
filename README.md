@@ -12,7 +12,11 @@ Rock spectrum assistant是一个基于Qt5架构和Python3语言开发的简单�
 
 4.右下角“清除绘图”按钮用于清除绘画板上已经绘出的曲线
 
-5.更多功能还在开发中。。。
+5.当您想使用十字线绘图模式时，请点击位于下侧的detailpolt，然后再选择一个文件点击polt，即可用新窗口绘制一个图形
+
+6.本软件的设置位于until\config.py下，只有一些最简单的参数设置，不建议进行修改
+
+Note：当你在pycharm中导入代码时，请在pycharm左侧目录树，右击ui和until两个文件夹，选择Make Directory As → Souces Root，否则在pycharm中run会报错
 
 
 TO DO List：
@@ -23,7 +27,7 @@ TO DO List：
 
 ~~绘图板可以指定不同画笔颜色~~
 
-简单的系统选项及其存储
+~~简单的系统选项及其存储~~
 
 开发带有checkbox的model
 

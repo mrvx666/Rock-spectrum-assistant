@@ -15,7 +15,7 @@ class Ui_Form(object):
         Form.setMinimumSize(QtCore.QSize(656, 612))
         Form.setMaximumSize(QtCore.QSize(656, 612))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/image/JLUgeo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/image/image/JLUgeo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Form.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -48,5 +48,5 @@ class Ui_Form(object):
         self.pushButtonNext.setText(_translate("Form", "下一页"))
         self.closeButton.setText(_translate("Form", "关闭"))
 
-from SlidingStackedWidget import SlidingStackedWidget
+from until.helppictureSliding.SlidingStackedWidget import SlidingStackedWidget
 import apprcc_rc

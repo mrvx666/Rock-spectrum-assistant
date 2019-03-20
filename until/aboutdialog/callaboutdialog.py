@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import QDialog,QApplication,QMessageBox
-from PyQt5.QtCore import pyqtSlot,QUrl,QEvent,Qt
-from PyQt5.QtGui import QDesktopServices,QMouseEvent
+from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox
+from PyQt5.QtCore import pyqtSlot, QUrl, QEvent, Qt
+from PyQt5.QtGui import QDesktopServices, QMouseEvent
 import sys
-from aboutdialog import Ui_aboutDialog
+from until.aboutdialog.aboutdialog import Ui_aboutDialog
 
 jlu_geo_website = "http://geo.jlu.edu.cn/"
 project_gituhub_url = "https://github.com/mrvx666/Rock-spectrum-assistant"

@@ -26,8 +26,8 @@
    <string>Rock Spectrum Assistant</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="apprcc.qrc">
-    <normaloff>:/image/JLUgeo.ico</normaloff>:/image/JLUgeo.ico</iconset>
+   <iconset resource="../../apprcc.qrc">
+    <normaloff>:/image/image/JLUgeo.ico</normaloff>:/image/image/JLUgeo.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="font">
@@ -215,7 +215,7 @@
   <tabstop>lineEdit</tabstop>
  </tabstops>
  <resources>
-  <include location="apprcc.qrc"/>
+  <include location="../../apprcc.qrc"/>
  </resources>
  <connections/>
 </ui>

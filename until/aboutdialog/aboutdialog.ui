@@ -31,8 +31,8 @@
    <string>关于</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="apprcc.qrc">
-    <normaloff>:/image/JLUgeo.ico</normaloff>:/image/JLUgeo.ico</iconset>
+   <iconset resource="../../apprcc.qrc">
+    <normaloff>:/image/image/JLUgeo.ico</normaloff>:/image/image/JLUgeo.ico</iconset>
   </property>
   <widget class="QPushButton" name="closeButton">
    <property name="geometry">
@@ -65,7 +65,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="apprcc.qrc">:/image/鸽子楼.png</pixmap>
+    <pixmap resource="../../apprcc.qrc">:/image/image/鸽子楼.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -87,7 +87,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="apprcc.qrc">:/image/院标(兰)xiao.png</pixmap>
+    <pixmap resource="../../apprcc.qrc">:/image/image/院标(蓝).png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -193,8 +193,9 @@
   </widget>
  </widget>
  <resources>
-  <include location="apprcc.qrc"/>
-  <include location="apprcc.qrc"/>
+  <include location="../../apprcc.qrc"/>
+  <include location="../../apprcc.qrc"/>
+  <include location="../../apprcc.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -2,7 +2,9 @@ import pyqtgraph as pg
 import pandas as pd
 import sys
 
-ticksspacing = 500
+from until.config import get_ticks_spacing
+
+ticksspacing = get_ticks_spacing()
 
 fileinex = sys.argv[1]
 
@@ -11,6 +13,7 @@ data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
 # 初始化窗口
 app = pg.QtGui.QApplication([])
 win = pg.GraphicsWindow(title='RSA详细绘图模式')
+win.resize(730, 400)
 
 xdict = dict(enumerate(data.index))
 axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), ticksspacing)]

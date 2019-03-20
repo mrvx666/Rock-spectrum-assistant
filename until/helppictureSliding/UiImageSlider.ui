@@ -26,8 +26,8 @@
    <string>帮助手册</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="apprcc.qrc">
-    <normaloff>:/image/JLUgeo.ico</normaloff>:/image/JLUgeo.ico</iconset>
+   <iconset resource="../../apprcc.qrc">
+    <normaloff>:/image/image/JLUgeo.ico</normaloff>:/image/image/JLUgeo.ico</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
    <item>
@@ -74,7 +74,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="apprcc.qrc"/>
+  <include location="../../apprcc.qrc"/>
  </resources>
  <connections/>
 </ui>

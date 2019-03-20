@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
-from UiImageSlider import Ui_Form
+from until.helppictureSliding.UiImageSlider import Ui_Form
 import apprcc_rc
-
+import os
 helpmanualpage = 5
 
 
@@ -23,7 +21,7 @@ class ImageSliderWidget(QWidget, Ui_Form):
         for num in range(1, helpmanualpage+1, 1):
             label = QLabel(self.stackedWidget)
             label.setScaledContents(True)
-            pic = ':/image/help (' + str(num) + ').png'
+            pic = ':/image/image/helpimage/help ({}).png'.format(str(num))
             label.setPixmap(QPixmap(pic))
             self.stackedWidget.addWidget(label)
 

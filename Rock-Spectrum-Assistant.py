@@ -13,18 +13,16 @@ import subprocess
 import pandas as pd
 
 
-from ui import Ui_MainWindow
-from callaboutdialog import aboutDialogUI
-from helppictureSliding import ImageSliderWidget
+from until.RSA_UI.RSA_ui import Ui_MainWindow
+from until.aboutdialog.callaboutdialog import aboutDialogUI
+from until.helppictureSliding.helppictureSliding import ImageSliderWidget
+from until.config import get_default_workdir, get_default_data_filename_extension, get_testdata, get_ticks_spacing
 
-defaultpathname = "data"
-defaultdataformat = ".txt"
-testdata = "Wavelength	XK1Y08-100000.asd\n" \
-           "350	 0.068295808533771 \n" \
-           "351	 6.88503984835842E-02 \n" \
-           "353	 6.96586664904809E-02 "
-color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k', )
-ticksspacing = 500
+workdir = get_default_workdir()
+default_data_filename_extension = get_default_data_filename_extension()
+testdata = get_testdata()
+ticksspacing = get_ticks_spacing()
+color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k')
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -33,7 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent=parent)
 
         # 初始化工作目录
-        self.workdir = os.getcwd() + os.sep + defaultpathname
+        self.workdir = os.getcwd() + os.sep + workdir
 
         # 初始化文件指针
         self.fileindex = self.workdir
@@ -142,11 +140,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # 指向一个文件，尝试读取数据
         elif os.path.isfile(self.fileindex):
+            # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
             try:
-                # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
                 if self.detailpoltcheckbox.isChecked():
                     self.detailpolt(self.fileindex)
                 else:
+                    print(self.fileindex)
                     self.normalpolt(self.fileindex)
 
                 # 在状态栏上显示当前绘图的文件和绘图总数
@@ -154,7 +153,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                            + str(self.plotcount + 1))
 
                 self.plotcount += 1
-
             except:
                 QMessageBox.information(self, "警告", "绘图失败", QMessageBox.Close, QMessageBox.Close)
 
@@ -164,8 +162,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.plotcount > len(color) - 1:
             colorindex = self.plotcount % len(color) - 1
 
-        # 载入数据，如果数据格式有变化这里会报错
         try:
+            # 载入数据，如果数据格式有变化这里会报错
             data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
             # 将数据表索引（波长）转换为绘图时的坐标轴数据
             xdict = dict(enumerate(data.index))
@@ -177,7 +175,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式", QMessageBox.Close, QMessageBox.Close)
 
     def detailpolt(self,fileindex):
-        subprocess.call("python ./detailpolt.py %s" % fileindex, shell=True)
+        subprocess.call("python .{}until{}detailpolt.py {}".format(os.sep, os.sep, fileindex), shell=True)
 
     def detailpoltchechboxstatechange(self,checkbox):
         if checkbox.isChecked():
@@ -194,7 +192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 弹出对话框，获取文件名；按下ok，okPressed为真
         filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
-        fullfilename = filename + defaultdataformat
+        fullfilename = filename + default_data_filename_extension
 
         # 这里默认文件指针指向的是一个目录，拼出完整文件路径
         fullfilepath = self.fileindex + os.path.sep + fullfilename
@@ -262,7 +260,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("edit " + self.fileindex.lstrip(self.workdir))
         # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         try:
-            subprocess.call("notepad %s" % filepath, shell=True)
+            subprocess.call("notepad {}".format(filepath), shell=True)
         except Exception as e:
             QMessageBox.critical(self, "警告", e, QMessageBox.Close, QMessageBox.Close)
 
