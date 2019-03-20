@@ -48,5 +48,5 @@ class Ui_Form(object):
         self.pushButtonNext.setText(_translate("Form", "下一页"))
         self.closeButton.setText(_translate("Form", "关闭"))
 
-from until.helppictureSliding.SlidingStackedWidget import SlidingStackedWidget
+from utils.helppictureSliding.SlidingStackedWidget import SlidingStackedWidget
 import apprcc_rc

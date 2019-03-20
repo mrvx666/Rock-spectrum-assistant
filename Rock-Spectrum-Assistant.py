@@ -13,10 +13,10 @@ import subprocess
 import pandas as pd
 
 
-from until.RSA_UI.RSA_ui import Ui_MainWindow
-from until.aboutdialog.callaboutdialog import aboutDialogUI
-from until.helppictureSliding.helppictureSliding import ImageSliderWidget
-from until.config import get_default_workdir, get_default_data_filename_extension, get_testdata, get_ticks_spacing
+from utils.RSA_UI.RSA_ui import Ui_MainWindow
+from utils.aboutdialog.callaboutdialog import aboutDialogUI
+from utils.helppictureSliding.helppictureSliding import ImageSliderWidget
+from utils.config import get_default_workdir, get_default_data_filename_extension, get_testdata, get_ticks_spacing
 
 workdir = get_default_workdir()
 default_data_filename_extension = get_default_data_filename_extension()
@@ -68,27 +68,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 设置工作目录
         self.changworkdir(self.workdir)
 
-        # 子窗体载入失败
-        if self.childwinerror == '':
-            self.statusbar.showMessage("Welcome to Rock Spectrum Assistant")
-        # 提示用户子窗体因为各种理由gg
-        else:
-            self.statusbar.showMessage(self.childwinerror)
-
     def _initUI(self):
         # 载入UI.py
         self.setupUi(self)
 
         # 载入子窗体
-        try:
-            self.aboutwin = aboutDialogUI()
-            self.About.triggered.connect(self.aboutthisprogram)
-
-            self.helpwin = ImageSliderWidget()
-            self.Help.triggered.connect(self.helpmanual)
-        # 当子窗体因为各种理由gg了，确保主窗体可以正常启动
-        except:
-            self.childwinerror = "child window initialization failed"
+        self.aboutwin = aboutDialogUI()
+        self.About.triggered.connect(self.aboutthisprogram)
+        self.helpwin = ImageSliderWidget()
+        self.Help.triggered.connect(self.helpmanual)
 
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -145,7 +133,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if self.detailpoltcheckbox.isChecked():
                     self.detailpolt(self.fileindex)
                 else:
-                    print(self.fileindex)
                     self.normalpolt(self.fileindex)
 
                 # 在状态栏上显示当前绘图的文件和绘图总数

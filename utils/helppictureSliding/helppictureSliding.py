@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
-from until.helppictureSliding.UiImageSlider import Ui_Form
+from utils.helppictureSliding.UiImageSlider import Ui_Form
 import apprcc_rc
 import os
 helpmanualpage = 5

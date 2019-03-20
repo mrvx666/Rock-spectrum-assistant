@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox
 from PyQt5.QtCore import pyqtSlot, QUrl, QEvent, Qt
 from PyQt5.QtGui import QDesktopServices, QMouseEvent
 import sys
-from until.aboutdialog.aboutdialog import Ui_aboutDialog
+from utils.aboutdialog.aboutdialog import Ui_aboutDialog
 
 jlu_geo_website = "http://geo.jlu.edu.cn/"
 project_gituhub_url = "https://github.com/mrvx666/Rock-spectrum-assistant"

@@ -2,7 +2,7 @@ import pyqtgraph as pg
 import pandas as pd
 import sys
 
-from until.config import get_ticks_spacing
+from utils.config import get_ticks_spacing
 
 ticksspacing = get_ticks_spacing()
 
