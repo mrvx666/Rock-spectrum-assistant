@@ -7,7 +7,6 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
                             QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
-import sys
 import os
 import subprocess
 import pandas as pd
@@ -164,11 +163,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def detailpolt(self,fileindex):
         subprocess.call("python .{}until{}detailpolt.py {}".format(os.sep, os.sep, fileindex), shell=True)
 
-    def detailpoltchechboxstatechange(self,checkbox):
+    def detailpoltchechboxstatechange(self, checkbox):
         if checkbox.isChecked():
             QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击polt来使用", QMessageBox.Close, QMessageBox.Close)
 
-    def alwaysontopcheckboxstatechange(self,checkbox):
+    def alwaysontopcheckboxstatechange(self, checkbox):
         if checkbox.isChecked():
             QMessageBox.information(self, "提示", "这个功能还在开发哦\n请稍等呢", QMessageBox.Close, QMessageBox.Close)
 
@@ -300,7 +299,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QApplication([])
     win = MainWindow()
     win.show()
     app.exec()
