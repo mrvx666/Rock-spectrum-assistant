@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>400</height>
+    <width>921</width>
+    <height>390</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>730</width>
-    <height>400</height>
+    <width>921</width>
+    <height>390</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>730</width>
-    <height>400</height>
+    <width>921</width>
+    <height>390</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
      <rect>
       <x>20</x>
       <y>20</y>
-      <width>375</width>
+      <width>461</width>
       <height>320</height>
      </rect>
     </property>
@@ -56,9 +56,9 @@
    <widget class="QTreeView" name="treeView">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>500</x>
       <y>50</y>
-      <width>301</width>
+      <width>411</width>
       <height>221</height>
      </rect>
     </property>
@@ -75,7 +75,7 @@
    <widget class="QPushButton" name="browsebutton">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>860</x>
       <y>20</y>
       <width>51</width>
       <height>21</height>
@@ -96,9 +96,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>500</x>
       <y>20</y>
-      <width>241</width>
+      <width>291</width>
       <height>21</height>
      </rect>
     </property>
@@ -107,6 +107,9 @@
       <family>Microsoft YaHei UI</family>
      </font>
     </property>
+    <property name="text">
+     <string>Working directory</string>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
     </property>
@@ -114,10 +117,10 @@
    <widget class="QPushButton" name="clearbutton">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>320</y>
-      <width>141</width>
-      <height>21</height>
+      <x>780</x>
+      <y>290</y>
+      <width>121</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -132,7 +135,7 @@
    <widget class="QCheckBox" name="detailpoltcheckbox">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>500</x>
       <y>290</y>
       <width>145</width>
       <height>21</height>
@@ -150,8 +153,8 @@
    <widget class="QCheckBox" name="mousepointtrackingchechbox">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>320</y>
+      <x>610</x>
+      <y>290</y>
       <width>145</width>
       <height>21</height>
      </rect>
@@ -164,21 +167,49 @@
     <property name="text">
      <string>MousePointTracking</string>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="mousepointtrackinglabel">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>290</y>
-      <width>131</width>
-      <height>21</height>
+      <x>510</x>
+      <y>310</y>
+      <width>231</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
     </property>
     <property name="text">
      <string>MousePoint</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="searchbutton">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>20</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>search</string>
     </property>
    </widget>
   </widget>
@@ -188,7 +219,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>730</width>
+     <width>921</width>
      <height>23</height>
     </rect>
    </property>
