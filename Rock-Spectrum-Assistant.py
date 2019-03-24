@@ -75,6 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # checkbox相关设置
         self.detailplotcheckbox.stateChanged.connect(lambda: self.detailplotchechboxstatechange(self.detailplotcheckbox))
+        self.mousepointtrackingchechbox.stateChanged.connect(lambda: self.mousepointtrackingchechboxstatechange(self.mousepointtrackingchechbox))
 
         # 绘图板鼠标追踪鼠标跟踪
         self.pyqtgraph.setMouseTracking(True)
@@ -160,10 +161,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def detailplot(self, file):
         subprocess.check_call("python .{}utils{}detailplot.py {}".format(os.sep, os.sep, file), shell=True)
         self.statusbar.showMessage("RSA:Detail plot " + self.mouseindex.lstrip(self.workdir))
-
-    def detailplotchechboxstatechange(self, checkbox):
-        if checkbox.isChecked():
-            QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击plot来使用", QMessageBox.Close, QMessageBox.Close)
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -295,6 +292,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin.show()
         self.helpwin.autoStart()
         self.statusbar.showMessage("RSA:start help manual")
+
+    def detailplotchechboxstatechange(self, checkbox):
+        if checkbox.isChecked():
+            QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击plot来使用", QMessageBox.Close, QMessageBox.Close)
+
+    def mousepointtrackingchechboxstatechange(self, checkbox):
+        if not checkbox.isChecked():
+            self.mousepointtrackinglabel.setText("MousePoint")
 
     def mouseMoved(self, evt):
         if self.plotcount >= 1 and self.mousepointtrackingchechbox.isChecked():
