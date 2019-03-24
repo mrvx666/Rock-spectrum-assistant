@@ -241,7 +241,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
         elif os.path.isfile(self.mouseindex):
             # 分割文件拓展名，并与默认数据文件拓展名作比较
-            file_extension = os.path.split(self.mouseindex)
+            file_extension = os.path.splitext(self.mouseindex)[1]
             if file_extension == default_data_filename_extension:
                 self.editdatafile(self.mouseindex)
             else:
