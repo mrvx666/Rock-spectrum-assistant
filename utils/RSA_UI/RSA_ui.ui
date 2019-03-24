@@ -114,10 +114,10 @@
    <widget class="QPushButton" name="clearbutton">
     <property name="geometry">
      <rect>
-      <x>567</x>
-      <y>300</y>
-      <width>144</width>
-      <height>31</height>
+      <x>570</x>
+      <y>320</y>
+      <width>141</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -144,10 +144,10 @@
      </font>
     </property>
     <property name="text">
-     <string>detailpolt</string>
+     <string>DetailPolt</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="alwaysontopcheckbox">
+   <widget class="QCheckBox" name="mousepointtrackingchechbox">
     <property name="geometry">
      <rect>
       <x>410</x>
@@ -162,7 +162,23 @@
      </font>
     </property>
     <property name="text">
-     <string>AlwaysOnTop</string>
+     <string>MousePointTracking</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mousepointtrackinglabel">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>290</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>MousePoint</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>

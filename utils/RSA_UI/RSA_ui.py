@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'RSA_ui.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -49,7 +50,7 @@ class Ui_MainWindow(object):
         self.lineEdit.setReadOnly(True)
         self.lineEdit.setObjectName("lineEdit")
         self.clearbutton = QtWidgets.QPushButton(self.centralwidget)
-        self.clearbutton.setGeometry(QtCore.QRect(567, 300, 144, 31))
+        self.clearbutton.setGeometry(QtCore.QRect(570, 320, 141, 21))
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
         self.clearbutton.setFont(font)
@@ -60,12 +61,16 @@ class Ui_MainWindow(object):
         font.setFamily("Microsoft YaHei UI")
         self.detailpoltcheckbox.setFont(font)
         self.detailpoltcheckbox.setObjectName("detailpoltcheckbox")
-        self.alwaysontopcheckbox = QtWidgets.QCheckBox(self.centralwidget)
-        self.alwaysontopcheckbox.setGeometry(QtCore.QRect(410, 320, 145, 21))
+        self.mousepointtrackingchechbox = QtWidgets.QCheckBox(self.centralwidget)
+        self.mousepointtrackingchechbox.setGeometry(QtCore.QRect(410, 320, 145, 21))
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
-        self.alwaysontopcheckbox.setFont(font)
-        self.alwaysontopcheckbox.setObjectName("alwaysontopcheckbox")
+        self.mousepointtrackingchechbox.setFont(font)
+        self.mousepointtrackingchechbox.setObjectName("mousepointtrackingchechbox")
+        self.mousepointtrackinglabel = QtWidgets.QLabel(self.centralwidget)
+        self.mousepointtrackinglabel.setGeometry(QtCore.QRect(570, 290, 131, 21))
+        self.mousepointtrackinglabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.mousepointtrackinglabel.setObjectName("mousepointtrackinglabel")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -98,11 +103,13 @@ class Ui_MainWindow(object):
         self.pyqtgraph.setWhatsThis(_translate("MainWindow", "<html><head/><body><p>根据选择数据绘出的结果图</p></body></html>"))
         self.browsebutton.setText(_translate("MainWindow", "browse"))
         self.clearbutton.setText(_translate("MainWindow", "Clear"))
-        self.detailpoltcheckbox.setText(_translate("MainWindow", "detailpolt"))
-        self.alwaysontopcheckbox.setText(_translate("MainWindow", "AlwaysOnTop"))
+        self.detailpoltcheckbox.setText(_translate("MainWindow", "DetailPolt"))
+        self.mousepointtrackingchechbox.setText(_translate("MainWindow", "MousePointTracking"))
+        self.mousepointtrackinglabel.setText(_translate("MainWindow", "MousePoint"))
         self.menuSetting.setTitle(_translate("MainWindow", "Setting"))
         self.About.setText(_translate("MainWindow", "About"))
         self.Help.setText(_translate("MainWindow", "Help"))
+
 
 from pyqtgraph import PlotWidget
 import apprcc_rc

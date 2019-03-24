@@ -1,5 +1,5 @@
 import pyqtgraph as pg
-import pandas as pd
+from pandas import read_csv
 import sys
 
 from utils.config import get_ticks_spacing
@@ -8,7 +8,7 @@ ticksspacing = get_ticks_spacing()
 
 fileinex = sys.argv[1]
 
-data = pd.read_csv(fileinex, dtype=float, sep='\t', index_col=0)
+data = read_csv(fileinex, dtype=float, sep='\t', index_col=0)
 
 # 初始化窗口
 app = pg.QtGui.QApplication([])
