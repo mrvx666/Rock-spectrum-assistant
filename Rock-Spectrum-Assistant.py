@@ -20,8 +20,6 @@ color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k')
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    data_y = []
-    dict_x = {}
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent=parent)
@@ -51,12 +49,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 不存在，提示用户希望进行的操作
             reply = QMessageBox.question(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置",
                                          QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-            if reply is QMessageBox.Yes:
+            if reply == QMessageBox.Yes:
                 # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
-                self.on_browseButton_clicked()
-            if reply is QMessageBox.Cancel:
+                try:
+                    self.on_browsebutton_clicked()
+                except:
+                    self.lineEdit.setText("Click the right side button to set work directory")
+            if reply == QMessageBox.Cancel:
                 # 用户点击No，设置提示
-                self.lineEdit.setText("Click the right side button to set work dir")
+                self.lineEdit.setText("Click the right side button to set work directory")
 
         # 获取pyqtgraph绘图对象
         self.plotItem = self.pyqtgraph.getPlotItem()
@@ -64,7 +65,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 设置工作目录
         self.changworkdir(self.workdir)
 
-        self.statusbar.showMessage("Welcome to Rock-Spectrum-Assistant")
+        # 状态栏提示欢迎语
+        self.statusbar.showMessage("RSA:Welcome to Rock-Spectrum-Assistant")
+
+        # 唤醒窗口，把窗口提到最前方
+        self.raise_()
 
     def _initUI(self):
         # 载入UI.py
@@ -149,13 +154,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             colorindex = self.plotcount % len(color) - 1
 
         # 载入数据，如果数据格式有变化这里会报错
-        self.data_y = load_data(fileindex)
+        self.y_data = load_data(fileindex)
         # 将数据表索引（波长）转换为绘图时的坐标轴数据
-        self.dict_x = dict(enumerate(self.data_y.index))
-        axis_x_data = [(i, list(self.data_y.index)[i]) for i in range(0, len(self.data_y.index), ticksspacing)]
+        self.x_dict = dict(enumerate(self.y_data.index))
+        axis_x_data = [(i, list(self.y_data.index)[i]) for i in range(0, len(self.y_data.index), ticksspacing)]
         stringaxis = self.plotItem.getAxis(name='bottom')
-        stringaxis.setTicks([axis_x_data, self.dict_x.items()])
-        self.pyqtgraph.plot(x=list(self.dict_x.keys()), y=self.data_y.iloc[:, 0].values, pen=color[colorindex])
+        stringaxis.setTicks([axis_x_data, self.x_dict.items()])
+        self.pyqtgraph.plot(x=list(self.x_dict.keys()), y=self.y_data.iloc[:, 0].values, pen=color[colorindex])
 
         # 在状态栏上显示当前绘图的文件和绘图总数
         self.plotcount += 1
@@ -209,10 +214,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 文件存在，询问用户希望的操作模式
             reply = QMessageBox.question(self, "温馨提示", filename + "文件在目录\n" + path + "\n已经存在，是否进入编辑模式",
                                         QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-            if reply is QMessageBox.Yes:
+            if reply == QMessageBox.Yes:
                 # 用户点击Yes，进入编辑模式
                 self.editdatafile(filepath)
-            if reply is QMessageBox.Cancel:
+            if reply == QMessageBox.Cancel:
                 # 用户点击No，什么也不做
                 pass
             self.statusbar.showMessage("RSA:" + self.mouseindex.lstrip(self.workdir) + filename + " 文件已存在")
@@ -261,11 +266,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             reply = QMessageBox.warning(self, "温馨提示", "是否确定删除文件"+filename,
                                         QMessageBox.Yes | QMessageBox.Cancel,
                                         QMessageBox.Cancel)
-            if reply is QMessageBox.Yes:
+            if reply == QMessageBox.Yes:
                 # 用户点击Yes，删除文件
                 os.remove(self.mouseindex)
                 self.statusbar.showMessage("RSA:remove  " + self.mouseindex.lstrip(self.workdir))
-            if reply is QMessageBox.Cancel:
+            if reply == QMessageBox.Cancel:
                 pass
 
     @pyqtSlot()
@@ -308,15 +313,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if vb.sceneBoundingRect().contains(pos):
                     mousePoint = vb.mapSceneToView(pos)
                     index = int(mousePoint.x())
-                    if 0 < index < len(self.data_y.index):
-                        self.mousepointtrackinglabel.setText(("x=%0.0f,y=%0.6f" % (self.dict_x[index], self.data_y.iloc[index].values)))
+                    if 0 < index < len(self.y_data.index):
+                        self.mousepointtrackinglabel.setText(("x=%0.0f,y=%0.6f" % (self.x_dict[index], self.y_data.iloc[index].values)))
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
         reply = QMessageBox.warning(self, "温馨提示", "即将退出RSA, 确定？", QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Yes)
-        if reply is QMessageBox.Yes:
+        if reply == QMessageBox.Yes:
             QCloseEvent.accept()
-        if reply is QMessageBox.Cancel:
+        if reply == QMessageBox.Cancel:
             QCloseEvent.ignore()
 
 
