@@ -12,10 +12,6 @@ import subprocess
 
 from utils import *
 
-workdir = get_default_workdir()
-default_data_filename_extension = get_default_data_filename_extension()
-testdata = get_testdata()
-ticksspacing = get_ticks_spacing()
 color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k')
 
 
@@ -25,10 +21,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent=parent)
 
         # 初始化工作目录
-        self.workdir = os.getcwd() + os.sep + workdir
-
-        # 初始化文件指针
-        self.mouseindex = self.workdir
+        self.workdir = os.getcwd() + os.sep + get_default_workdir()
 
         # 初始化子窗口错误提示，正常载入不会用到
         self.childwinerror = ''
@@ -136,6 +129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif os.path.isfile(self.mouseindex):
 
             try:
+
                 # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
                 if self.detailpoltcheckbox.isChecked():
                     self.detailpolt(self.mouseindex)
@@ -155,9 +149,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 载入数据，如果数据格式有变化这里会报错
         self.y_data = load_data(fileindex)
+
         # 将数据表索引（波长）转换为绘图时的坐标轴数据
         self.x_dict = dict(enumerate(self.y_data.index))
-        axis_x_data = [(i, list(self.y_data.index)[i]) for i in range(0, len(self.y_data.index), ticksspacing)]
+        axis_x_data = [(i, list(self.y_data.index)[i]) for i in range(0, len(self.y_data.index), get_ticks_spacing())]
         stringaxis = self.plotItem.getAxis(name='bottom')
         stringaxis.setTicks([axis_x_data, self.x_dict.items()])
         self.pyqtgraph.plot(x=list(self.x_dict.keys()), y=self.y_data.iloc[:, 0].values, pen=color[colorindex])
@@ -167,8 +162,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:plot " + self.mouseindex.lstrip(self.workdir) + " ，当前绘图总数 "
                                    + str(self.plotcount + 1))
 
-    def detailpolt(self, fileindex):
-        subprocess.check_call("python .{}utils{}detailpolt.py {}".format(os.sep, os.sep, fileindex), shell=True)
+    def detailpolt(self, file):
+        subprocess.check_call("python .{}utils{}detailpolt.py {}".format(os.sep, os.sep, file), shell=True)
+        self.statusbar.showMessage("RSA:Detail polt " + self.mouseindex.lstrip(self.workdir))
 
     def detailpoltchechboxstatechange(self, checkbox):
         if checkbox.isChecked():
@@ -181,7 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 弹出对话框，获取文件名；按下ok，okPressed为真
         filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
-        fullfilename = filename + default_data_filename_extension
+        fullfilename = filename + get_default_data_filename_extension()
 
         # 这里默认文件指针指向的是一个目录，拼出完整文件路径
         fullfilepath = self.mouseindex + os.path.sep + fullfilename
@@ -227,7 +223,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def writedatatofile(self, filepath):
         # 弹出提示框让用户输入数据
-        data, ok = QInputDialog.getMultiLineText(self, "请输入数据", "请按照示例数据格式输入：", testdata)
+        data, ok = QInputDialog.getMultiLineText(self, "请输入数据", "请按照示例数据格式输入：", get_testdata())
         # 用户按下了ok，不按的话不写入数据
         if ok:
             try:
@@ -235,8 +231,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 f.write(data)
                 f.close()
                 self.statusbar.showMessage("RSA:write " + filepath.lstrip(self.workdir) + " 写入成功")
-            except IOError as e:
-                QMessageBox.critical(self, "警告", e, QMessageBox.Close, QMessageBox.Close)
+            except Exception as e:
+                QMessageBox.critical(self, "警告", "文件写入不正确\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
 
     def editfile(self):
         if os.path.isdir(self.mouseindex):
@@ -245,18 +241,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif os.path.isfile(self.mouseindex):
             # 分割文件拓展名，并与默认数据文件拓展名作比较
             file_extension = os.path.splitext(self.mouseindex)[1]
-            if file_extension == default_data_filename_extension:
+            if file_extension == get_default_data_filename_extension():
                 self.editdatafile(self.mouseindex)
             else:
                 QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
 
-    def editdatafile(self, filepath):
+    def editdatafile(self, file):
         self.statusbar.showMessage("RSA:edit " + self.mouseindex.lstrip(self.workdir))
         # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         try:
-            subprocess.check_call("notepad {}".format(filepath), shell=True)
+            subprocess.check_call("notepad {}".format(file), shell=True)
         except Exception as e:
-            QMessageBox.critical(self, "警告", e, QMessageBox.Close, QMessageBox.Close)
+            QMessageBox.critical(self, "警告", "文件编辑不正确\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
 
     def removefile(self):
         if os.path.isdir(self.mouseindex):
@@ -269,7 +265,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if reply == QMessageBox.Yes:
                 # 用户点击Yes，删除文件
                 os.remove(self.mouseindex)
-                self.statusbar.showMessage("RSA:remove  " + self.mouseindex.lstrip(self.workdir))
+                self.statusbar.showMessage("RSA:remove " + self.mouseindex.lstrip(self.workdir))
             if reply == QMessageBox.Cancel:
                 pass
 
@@ -306,15 +302,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:start help manual")
 
     def mouseMoved(self, evt):
-        if self.plotcount >= 1:
-            if self.mousepointtrackingchechbox.isChecked():
-                pos = evt
-                vb = self.plotItem.vb
-                if vb.sceneBoundingRect().contains(pos):
-                    mousePoint = vb.mapSceneToView(pos)
-                    index = int(mousePoint.x())
-                    if 0 < index < len(self.y_data.index):
-                        self.mousepointtrackinglabel.setText(("x=%0.0f,y=%0.6f" % (self.x_dict[index], self.y_data.iloc[index].values)))
+        if self.plotcount >= 1 and self.mousepointtrackingchechbox.isChecked():
+            pos = evt
+            vb = self.plotItem.vb
+            if vb.sceneBoundingRect().contains(pos):
+                mousePoint = vb.mapSceneToView(pos)
+                index = int(mousePoint.x())
+                if 0 < index < len(self.y_data.index):
+                    self.mousepointtrackinglabel.setText(("x=%0.0f,y=%0.6f" % (self.x_dict[index], self.y_data.iloc[index].values)))
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
