@@ -14,7 +14,7 @@ data = read_csv(file, dtype=float, sep='\t', index_col=0)
 
 # 初始化窗口
 app = pg.QtGui.QApplication([])
-win = pg.GraphicsWindow(title='Rock-Spectrum-Assistant:DetailPolt')
+win = pg.GraphicsWindow(title='Rock-Spectrum-Assistant:Detailplot')
 win.resize(730, 400)
 
 xdict = dict(enumerate(data.index))

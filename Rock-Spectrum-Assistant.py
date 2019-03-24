@@ -23,11 +23,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 初始化工作目录
         self.workdir = os.getcwd() + os.sep + get_default_workdir()
 
-        # 初始化子窗口错误提示，正常载入不会用到
-        self.childwinerror = ''
-        self.plotcount = 0
-        self.plotlimit = 5
-
         # 初始化UI
         self._initUI()
 
@@ -79,7 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.treeView.customContextMenuRequested.connect(self.context_menu)
 
         # checkbox相关设置
-        self.detailpoltcheckbox.stateChanged.connect(lambda: self.detailpoltchechboxstatechange(self.detailpoltcheckbox))
+        self.detailplotcheckbox.stateChanged.connect(lambda: self.detailplotchechboxstatechange(self.detailplotcheckbox))
 
         # 绘图板鼠标追踪鼠标跟踪
         self.pyqtgraph.setMouseTracking(True)
@@ -117,8 +112,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def plot(self):
         # 绘图板上图形过多，提示用户
-        if self.plotcount == self.plotlimit:
-            QMessageBox.information(self, "温馨提示", "绘图板上已经超过" + str(self.plotlimit) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Close, QMessageBox.Close)
+        if self.plotcount == get_plot_limit():
+            QMessageBox.information(self, "温馨提示", "绘图板上已经超过" + str(get_plot_limit()) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Close, QMessageBox.Close)
 
         # 判断是文件指针指向的是一个目录还是文件
         if os.path.isdir(self.mouseindex) or self.mouseindex == "":
@@ -131,17 +126,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             try:
 
                 # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
-                if self.detailpoltcheckbox.isChecked():
-                    self.detailpolt(self.mouseindex)
+                if self.detailplotcheckbox.isChecked():
+                    self.detailplot(self.mouseindex)
                 else:
-                    self.normalpolt(self.mouseindex)
+                    self.normalplot(self.mouseindex)
 
             # 捕获异常
             except Exception as e:
                 QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
                 self.statusbar.showMessage("RSA:please check the data file format")
 
-    def normalpolt(self, fileindex):
+    def normalplot(self, fileindex):
         # 选取画笔颜色，防止溢出
         colorindex = self.plotcount
         if self.plotcount > len(color) - 1:
@@ -160,15 +155,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 在状态栏上显示当前绘图的文件和绘图总数
         self.plotcount += 1
         self.statusbar.showMessage("RSA:plot " + self.mouseindex.lstrip(self.workdir) + " ，当前绘图总数 "
-                                   + str(self.plotcount + 1))
+                                   + str(self.plotcount))
 
-    def detailpolt(self, file):
-        subprocess.check_call("python .{}utils{}detailpolt.py {}".format(os.sep, os.sep, file), shell=True)
-        self.statusbar.showMessage("RSA:Detail polt " + self.mouseindex.lstrip(self.workdir))
+    def detailplot(self, file):
+        subprocess.check_call("python .{}utils{}detailplot.py {}".format(os.sep, os.sep, file), shell=True)
+        self.statusbar.showMessage("RSA:Detail plot " + self.mouseindex.lstrip(self.workdir))
 
-    def detailpoltchechboxstatechange(self, checkbox):
+    def detailplotchechboxstatechange(self, checkbox):
         if checkbox.isChecked():
-            QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击polt来使用", QMessageBox.Close, QMessageBox.Close)
+            QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击plot来使用", QMessageBox.Close, QMessageBox.Close)
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -274,7 +269,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pyqtgraph.clear()
         self.plotcount = 0
         self.mousepointtrackinglabel.setText("MousePoint")
-        self.detailpoltcheckbox.setChecked(False)
+        self.detailplotcheckbox.setChecked(False)
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
         self.statusbar.showMessage("RSA:reset")

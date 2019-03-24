@@ -132,7 +132,7 @@
      <string>Clear</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="detailpoltcheckbox">
+   <widget class="QCheckBox" name="detailplotcheckbox">
     <property name="geometry">
      <rect>
       <x>500</x>
@@ -147,7 +147,7 @@
      </font>
     </property>
     <property name="text">
-     <string>DetailPolt</string>
+     <string>DetailPlot</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="mousepointtrackingchechbox">
