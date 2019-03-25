@@ -25,6 +25,7 @@ class Ui_searchdialog(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.lineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget)
+        self.lineEdit.setText("")
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout.addWidget(self.lineEdit)
         self.searchbutton = QtWidgets.QPushButton(self.verticalLayoutWidget)
@@ -51,7 +52,6 @@ class Ui_searchdialog(object):
     def retranslateUi(self, searchdialog):
         _translate = QtCore.QCoreApplication.translate
         searchdialog.setWindowTitle(_translate("searchdialog", "RSA:search file"))
-        self.lineEdit.setText(_translate("searchdialog", "input keywords to search..."))
         self.searchbutton.setText(_translate("searchdialog", "search"))
         self.dirnamecheckbox.setText(_translate("searchdialog", "search include directory name"))
         self.contentcheckbox.setText(_translate("searchdialog", "search include file content"))

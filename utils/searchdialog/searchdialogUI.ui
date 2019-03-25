@@ -32,7 +32,7 @@
       <item>
        <widget class="QLineEdit" name="lineEdit">
         <property name="text">
-         <string>input keywords to search...</string>
+         <string/>
         </property>
        </widget>
       </item>
