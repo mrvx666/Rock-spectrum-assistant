@@ -3,16 +3,16 @@ from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox
 from PyQt5.QtCore import pyqtSlot, QUrl, QEvent, Qt
 from PyQt5.QtGui import QDesktopServices, QMouseEvent
 import sys
-from utils.aboutdialog.aboutdialog import Ui_aboutDialog
+from utils.aboutdialog.aboutdialogUI import Ui_aboutDialog
 
 jlu_geo_website = "http://geo.jlu.edu.cn/"
 project_gituhub_url = "https://github.com/mrvx666/Rock-spectrum-assistant"
 SB_jjh = "https://www.zhihu.com/question/42012531"
 
 
-class aboutDialogUI(QDialog,Ui_aboutDialog):
+class aboutDialog(QDialog, Ui_aboutDialog):
     def __init__(self, parent=None):
-        super(aboutDialogUI, self).__init__(parent)
+        super(aboutDialog, self).__init__(parent)
         self._initUI()
         self.clickcount = 0
 
@@ -57,7 +57,7 @@ class aboutDialogUI(QDialog,Ui_aboutDialog):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ad = aboutDialogUI()
+    ad = aboutDialog()
     ad.show()
     sys.exit(app.exec_())
 

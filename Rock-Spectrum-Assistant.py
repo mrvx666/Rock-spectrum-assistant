@@ -29,10 +29,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 初始化文件管理器
         self.model = QFileSystemModel()
 
+        # 获取pyqtgraph绘图对象
+        self.plotItem = self.pyqtgraph.getPlotItem()
+
+        self.plotcount = 0
+
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
             # 存在，设置路径提示文本框
             self.lineEdit.setText(self.workdir)
+            # 设置工作目录
+            self.changworkdir(self.workdir)
         else:
             # 不存在，提示用户希望进行的操作
             reply = QMessageBox.question(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置",
@@ -47,12 +54,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # 用户点击No，设置提示
                 self.lineEdit.setText("Click the right side button to set work directory")
 
-        # 获取pyqtgraph绘图对象
-        self.plotItem = self.pyqtgraph.getPlotItem()
-
-        # 设置工作目录
-        self.changworkdir(self.workdir)
-
         # 状态栏提示欢迎语
         self.statusbar.showMessage("RSA:Welcome to Rock-Spectrum-Assistant")
 
@@ -64,10 +65,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # 载入子窗体
-        self.aboutwin = aboutDialogUI()
-        self.About.triggered.connect(self.aboutthisprogram)
-        self.helpwin = ImageSliderWidget()
+        self.aboutwin = aboutDialog()
         self.Help.triggered.connect(self.helpmanual)
+        self.helpwin = ImageSliderWidget()
+        self.About.triggered.connect(self.aboutthisprogram)
+        self.searchdialog = searchdialog(self.workdir)
+        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
+        self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
 
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -75,23 +79,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # checkbox相关设置
         self.detailplotcheckbox.stateChanged.connect(lambda: self.detailplotchechboxstatechange(self.detailplotcheckbox))
-        self.mousepointtrackingchechbox.stateChanged.connect(lambda: self.mousepointtrackingchechboxstatechange(self.mousepointtrackingchechbox))
 
         # 绘图板鼠标追踪鼠标跟踪
         self.pyqtgraph.setMouseTracking(True)
         self.pyqtgraph.scene().sigMouseMoved.connect(self.mouseMoved)
 
-    def changworkdir(self, path):
+    def changworkdir(self, path, isdialogparent=False):
         # 设置treeview工作目录，代码顺序不能颠倒
         self.model.setRootPath(path)
         self.treeView.setModel(self.model)
         self.treeView.setRootIndex(self.model.index(path))
         # 重设工作目录
         self.workdir = self.model.rootPath()
-        # 更换目录做一次清空
-        self.on_clearbutton_clicked()
+        # 更换目录做一次清空,仅限不是由子窗口调用的时候
+        if not isdialogparent:
+            self.on_clearbutton_clicked()
 
     def context_menu(self):
+
         # 设定鼠标点击位置的指针
         index = self.treeView.currentIndex()
         self.mouseindex = self.model.filePath(index)
@@ -99,8 +104,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 添加右键菜单
         menu = QMenu()
 
-        plot = menu.addAction("plot")
-        plot.triggered.connect(self.plot)
+        plotfile = menu.addAction("plot")
+        plotfile.triggered.connect(self.plotfile)
         addfile = menu.addAction("add")
         addfile.triggered.connect(self.addfile)
         editfile = menu.addAction("edit")
@@ -111,7 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         cursor = QCursor()
         menu.exec_(cursor.pos())
 
-    def plot(self):
+    def plotfile(self):
         # 绘图板上图形过多，提示用户
         if self.plotcount == get_plot_limit():
             QMessageBox.information(self, "温馨提示", "绘图板上已经超过" + str(get_plot_limit()) + "个图形，过多绘图会导致无法分辨，请清除绘图板", QMessageBox.Close, QMessageBox.Close)
@@ -137,14 +142,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
                 self.statusbar.showMessage("RSA:please check the data file format")
 
-    def normalplot(self, fileindex):
+    def normalplot(self, file):
         # 选取画笔颜色，防止溢出
         colorindex = self.plotcount
         if self.plotcount > len(color) - 1:
             colorindex = self.plotcount % len(color) - 1
 
         # 载入数据，如果数据格式有变化这里会报错
-        self.y_data = load_data(fileindex)
+        self.y_data = load_data(file)
 
         # 将数据表索引（波长）转换为绘图时的坐标轴数据
         self.x_dict = dict(enumerate(self.y_data.index))
@@ -155,12 +160,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 在状态栏上显示当前绘图的文件和绘图总数
         self.plotcount += 1
-        self.statusbar.showMessage("RSA:plot " + self.mouseindex.lstrip(self.workdir) + " ，当前绘图总数 "
+        self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) + " ，当前绘图总数 "
                                    + str(self.plotcount))
 
     def detailplot(self, file):
         subprocess.check_call("python .{}utils{}detailplot.py {}".format(os.sep, os.sep, file), shell=True)
-        self.statusbar.showMessage("RSA:Detail plot " + self.mouseindex.lstrip(self.workdir))
+        self.statusbar.showMessage("RSA:Detail plot " + file.lstrip(self.workdir))
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -239,12 +244,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
 
     def editdatafile(self, file):
-        self.statusbar.showMessage("RSA:edit " + self.mouseindex.lstrip(self.workdir))
         # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         try:
             subprocess.check_call("notepad {}".format(file), shell=True)
         except Exception as e:
             QMessageBox.critical(self, "警告", "文件编辑不正确\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
+        self.statusbar.showMessage("RSA:edit " + file.lstrip(self.workdir))
 
     def removefile(self):
         if os.path.isdir(self.mouseindex):
@@ -272,17 +277,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:reset")
 
     @pyqtSlot()
-    def on_browsebutton_clicked(self):
-        filedialog = QFileDialog()
-        filedialog.setViewMode(QFileDialog.Detail)
-        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
-        self.changworkdir(path)
+    def on_browsebutton_clicked(self, path=None, isdialogparent=False):
+        if path is None:
+            filedialog = QFileDialog()
+            filedialog.setViewMode(QFileDialog.Detail)
+            path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
+        self.changworkdir(path, isdialogparent)
         self.lineEdit.setText(path)
         self.statusbar.showMessage("RSA:change work dir to " + path)
 
     @pyqtSlot()
     def on_searchbutton_clicked(self):
-        print("on_searchbutton_clicked")
+        self.searchdialog.show()
+
+    def searchdialogitemdoubleclicked(self, event):
+        index = event.text()
+        if os.path.isdir(index):
+            self.on_browsebutton_clicked(index, isdialogparent=True)
+        elif os.path.isfile(index):
+            path = os.path.dirname(index)
+            self.on_browsebutton_clicked(path, isdialogparent=True)
+            self.mouseindex = index
+            self.plotfile()
+            self.searchdialog.close()
+
+        if self.closesearchchechbox.isChecked():
+            self.searchdialog.close()
 
     def aboutthisprogram(self):
         self.aboutwin.show()
@@ -297,12 +317,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if checkbox.isChecked():
             QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击plot来使用", QMessageBox.Close, QMessageBox.Close)
 
-    def mousepointtrackingchechboxstatechange(self, checkbox):
-        if not checkbox.isChecked():
-            self.mousepointtrackinglabel.setText("MousePoint")
-
     def mouseMoved(self, evt):
-        if self.plotcount >= 1 and self.mousepointtrackingchechbox.isChecked():
+        if self.plotcount >= 1:
             pos = evt
             vb = self.plotItem.vb
             if vb.sceneBoundingRect().contains(pos):

@@ -150,12 +150,12 @@
      <string>DetailPlot</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="mousepointtrackingchechbox">
+   <widget class="QCheckBox" name="closesearchchechbox">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>594</x>
       <y>290</y>
-      <width>145</width>
+      <width>161</width>
       <height>21</height>
      </rect>
     </property>
@@ -165,7 +165,7 @@
      </font>
     </property>
     <property name="text">
-     <string>MousePointTracking</string>
+     <string>AutoCloseSearchResult</string>
     </property>
     <property name="checked">
      <bool>true</bool>

@@ -38,6 +38,7 @@ plot.addItem(vLine, ignoreBounds=True)
 plot.addItem(hLine, ignoreBounds=True)
 
 plot.showGrid(x=True, y=True, alpha=0.5)
+plot.resize(900, 600)
 
 
 vb = plot.vb

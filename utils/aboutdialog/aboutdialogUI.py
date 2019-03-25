@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'aboutdialog.ui'
+# Form implementation generated from reading ui file 'aboutdialogUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_aboutDialog(object):
     def setupUi(self, aboutDialog):
@@ -84,5 +85,6 @@ class Ui_aboutDialog(object):
         self.RSAtextlabel.setText(_translate("aboutDialog", "Rock Spectrum Assistant"))
         self.geowebsiteButton.setText(_translate("aboutDialog", "地球科学学院"))
         self.projectgituhubButton.setText(_translate("aboutDialog", "项目Github"))
+
 
 import apprcc_rc
