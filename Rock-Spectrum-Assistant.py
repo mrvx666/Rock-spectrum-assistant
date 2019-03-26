@@ -328,9 +328,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:start help manual")
 
     def mouseMoved(self, event):
-        # 如果没有十字光标，添加
-        self.add_line_and_label_to_plotitem()
         if self.detailplotcheckbox.isChecked() and self.plotcount >= 1:
+            # 如果没有十字光标，添加
+            self.add_line_and_label_to_plotitem()
             if event is None:
                 pass
             else:
