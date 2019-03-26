@@ -60,6 +60,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
         self.detailplotcheckbox.setFont(font)
+        self.detailplotcheckbox.setChecked(True)
         self.detailplotcheckbox.setObjectName("detailplotcheckbox")
         self.closesearchchechbox = QtWidgets.QCheckBox(self.centralwidget)
         self.closesearchchechbox.setGeometry(QtCore.QRect(594, 290, 161, 21))

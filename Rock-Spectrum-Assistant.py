@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
                             QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
 import os
 import subprocess
+import pyqtgraph as pg
 
 from utils import *
 
@@ -77,9 +78,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
 
-        # checkbox相关设置
-        self.detailplotcheckbox.stateChanged.connect(lambda: self.detailplotchechboxstatechange(self.detailplotcheckbox))
-
         # 绘图板鼠标追踪鼠标跟踪
         self.pyqtgraph.setMouseTracking(True)
         self.pyqtgraph.scene().sigMouseMoved.connect(self.mouseMoved)
@@ -130,19 +128,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif os.path.isfile(self.mouseindex):
 
             try:
-
-                # 是选用正常绘图模式还是详细绘图模式呢，这是个问题
-                if self.detailplotcheckbox.isChecked():
-                    self.detailplot(self.mouseindex)
-                else:
-                    self.normalplot(self.mouseindex)
+                self.plot(self.mouseindex)
 
             # 捕获异常
             except Exception as e:
                 QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
                 self.statusbar.showMessage("RSA:please check the data file format")
 
-    def normalplot(self, file):
+    def plot(self, file):
         # 选取画笔颜色，防止溢出
         colorindex = self.plotcount
         if self.plotcount > len(color) - 1:
@@ -158,14 +151,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stringaxis.setTicks([axis_x_data, self.x_dict.items()])
         self.pyqtgraph.plot(x=list(self.x_dict.keys()), y=self.y_data.iloc[:, 0].values, pen=color[colorindex])
 
+        # 十字光标相关设置
+        self.label = pg.TextItem()  # 创建一个文本项
+        self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
+
+        if self.detailplotcheckbox.isChecked():
+            self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
+            self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
+            self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
+            self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+
         # 在状态栏上显示当前绘图的文件和绘图总数
         self.plotcount += 1
         self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) + " ，当前绘图总数 "
                                    + str(self.plotcount))
-
-    def detailplot(self, file):
-        subprocess.check_call("python .{}utils{}detailplot.py {}".format(os.sep, os.sep, file), shell=True)
-        self.statusbar.showMessage("RSA:Detail plot " + file.lstrip(self.workdir))
 
     def addfile(self):
         # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
@@ -271,7 +270,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pyqtgraph.clear()
         self.plotcount = 0
         self.mousepointtrackinglabel.setText("MousePoint")
-        self.detailplotcheckbox.setChecked(False)
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
         self.statusbar.showMessage("RSA:reset")
@@ -313,19 +311,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin.autoStart()
         self.statusbar.showMessage("RSA:start help manual")
 
-    def detailplotchechboxstatechange(self, checkbox):
-        if checkbox.isChecked():
-            QMessageBox.information(self, "提示", "现在将启动详细绘图模式\n请选择一个文件右击plot来使用", QMessageBox.Close, QMessageBox.Close)
-
-    def mouseMoved(self, evt):
-        if self.plotcount >= 1:
-            pos = evt
-            vb = self.plotItem.vb
-            if vb.sceneBoundingRect().contains(pos):
-                mousePoint = vb.mapSceneToView(pos)
-                index = int(mousePoint.x())
-                if 0 < index < len(self.y_data.index):
-                    self.mousepointtrackinglabel.setText(("x=%0.0f,y=%0.6f" % (self.x_dict[index], self.y_data.iloc[index].values)))
+    def mouseMoved(self, event):
+        if self.detailplotcheckbox.isChecked() and self.plotcount >= 1:
+            if event is None:
+                print("事件为空")
+            else:
+                pos = event  # 获取事件的鼠标位置
+                try:
+                    # 如果鼠标位置在绘图部件中
+                    if self.plotItem.sceneBoundingRect().contains(pos):
+                        mousePoint = self.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                        index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                        # pos_y = int(mousePoint.y())  # 鼠标所处的Y轴坐标
+                        if -1 < index < len(self.y_data.index):
+                            # 在label中写入HTML
+                            self.label.setHtml(
+                                "<p style='color:white'><strong>波长：{0}</strong></p><p style='color:white'>数据：{1}</p></p>"
+                                    .format(self.x_dict[index], self.y_data.iloc[index].values))
+                            self.label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.vLine.setPos(mousePoint.x())
+                        self.hLine.setPos(mousePoint.y())
+                except Exception as e:
+                    QMessageBox.information(self, "提示", "鼠标追踪错误\n{}".format(e), QMessageBox.Close,
+                                            QMessageBox.Close)
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示

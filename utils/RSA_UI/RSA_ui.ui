@@ -149,6 +149,9 @@
     <property name="text">
      <string>DetailPlot</string>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QCheckBox" name="closesearchchechbox">
     <property name="geometry">
