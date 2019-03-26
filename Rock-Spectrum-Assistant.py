@@ -33,7 +33,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 获取pyqtgraph绘图对象
         self.plotItem = self.pyqtgraph.getPlotItem()
 
-        self.plotcount = 0
+        self.axis_y_data_arr = []
+        self.plotcount = len(self.axis_y_data_arr)
+        self.axis_x_dict_arr = []
+        self.fistplotflag = True
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -142,24 +145,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             colorindex = self.plotcount % len(color) - 1
 
         # 载入数据，如果数据格式有变化这里会报错
-        self.y_data = load_data(file)
+        data = load_data(file)
+        self.axis_y_data_arr.append(data)
 
         # 将数据表索引（波长）转换为绘图时的坐标轴数据
-        self.x_dict = dict(enumerate(self.y_data.index))
-        axis_x_data = [(i, list(self.y_data.index)[i]) for i in range(0, len(self.y_data.index), get_ticks_spacing())]
+        x_dict = dict(enumerate(data.index))
+        self.axis_x_dict_arr.append(x_dict)
+        axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), get_ticks_spacing())]
         stringaxis = self.plotItem.getAxis(name='bottom')
-        stringaxis.setTicks([axis_x_data, self.x_dict.items()])
-        self.pyqtgraph.plot(x=list(self.x_dict.keys()), y=self.y_data.iloc[:, 0].values, pen=color[colorindex])
+        stringaxis.setTicks([axis_x_data, x_dict.items()])
+        self.pyqtgraph.plot(x=list(x_dict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
 
         # 十字光标相关设置
-        self.label = pg.TextItem()  # 创建一个文本项
-        self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
-
-        if self.detailplotcheckbox.isChecked():
+        if self.detailplotcheckbox.isChecked() and self.fistplotflag:
+            self.label = pg.TextItem()  # 创建一个文本项
+            self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
             self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
             self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
             self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
             self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+            self.fistplotflag = False
 
         # 在状态栏上显示当前绘图的文件和绘图总数
         self.plotcount += 1
@@ -269,9 +274,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_clearbutton_clicked(self):
         self.pyqtgraph.clear()
         self.plotcount = 0
-        self.mousepointtrackinglabel.setText("MousePoint")
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
+        self.axis_y_data_arr.clear()
+        self.axis_x_dict_arr.clear()
+        self.fistplotflag = True
         self.statusbar.showMessage("RSA:reset")
 
     @pyqtSlot()
@@ -314,7 +321,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def mouseMoved(self, event):
         if self.detailplotcheckbox.isChecked() and self.plotcount >= 1:
             if event is None:
-                print("事件为空")
+                pass
             else:
                 pos = event  # 获取事件的鼠标位置
                 try:
@@ -323,11 +330,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         mousePoint = self.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
                         index = int(mousePoint.x())  # 鼠标所处的X轴坐标
                         # pos_y = int(mousePoint.y())  # 鼠标所处的Y轴坐标
-                        if -1 < index < len(self.y_data.index):
+                        # TODO:如果多次载入数据长度不一样，这里可能会引发错误
+                        if -1 < index < len(self.axis_y_data_arr[0].index):
                             # 在label中写入HTML
-                            self.label.setHtml(
-                                "<p style='color:white'><strong>波长：{0}</strong></p><p style='color:white'>数据：{1}</p></p>"
-                                    .format(self.x_dict[index], self.y_data.iloc[index].values))
+                            self.label.setHtml(self.generatemousetrackinglabel(self.plotcount, index))
                             self.label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.vLine.setPos(mousePoint.x())
@@ -335,6 +341,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 except Exception as e:
                     QMessageBox.information(self, "提示", "鼠标追踪错误\n{}".format(e), QMessageBox.Close,
                                             QMessageBox.Close)
+
+    def generatemousetrackinglabel(self, count, index):
+        labletext = ""
+        for i in range(count):
+            labletext = labletext + "<p style='color:white'><strong>波长：{} 数据：{}</strong></p>"\
+                .format(self.axis_x_dict_arr[i][index], self.axis_y_data_arr[i].iloc[index].values)
+        return labletext
 
     def closeEvent(self, QCloseEvent):
         # 退出程序确认,使用QMessageBox提示
