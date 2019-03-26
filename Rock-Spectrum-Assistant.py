@@ -33,10 +33,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 获取pyqtgraph绘图对象
         self.plotItem = self.pyqtgraph.getPlotItem()
 
+        # 声明两个数组，用于向鼠标追踪方法传递数据
         self.axis_y_data_arr = []
-        self.plotcount = len(self.axis_y_data_arr)
         self.axis_x_dict_arr = []
+        # 这个标志是用来防止重复添加绘图板上的十字线
         self.fistplotflag = True
+
+        # checkbox相关设置
+        self.detailplotcheckbox.stateChanged.connect(self.add_line_and_label_to_plotitem)
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -156,18 +160,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stringaxis.setTicks([axis_x_data, x_dict.items()])
         self.pyqtgraph.plot(x=list(x_dict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
 
-        # 十字光标相关设置
-        if self.detailplotcheckbox.isChecked() and self.fistplotflag:
-            self.label = pg.TextItem()  # 创建一个文本项
-            self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
-            self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
-            self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
-            self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
-            self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
-            self.fistplotflag = False
+        # 如果没有十字光标，添加
+        self.add_line_and_label_to_plotitem()
 
+        # 用数据数组长度来给绘图计数器赋值
+        self.plotcount = len(self.axis_y_data_arr)
         # 在状态栏上显示当前绘图的文件和绘图总数
-        self.plotcount += 1
         self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) + " ，当前绘图总数 "
                                    + str(self.plotcount))
 
@@ -295,6 +293,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_searchbutton_clicked(self):
         self.searchdialog.show()
 
+    def add_line_and_label_to_plotitem(self):
+        # 十字光标相关设置,添加元素到绘图元件中
+        if self.detailplotcheckbox.isChecked() and self.fistplotflag:
+            self.label = pg.TextItem()  # 创建一个文本项
+            self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
+            self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
+            self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
+            self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
+            self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+            self.fistplotflag = False
+
     def searchdialogitemdoubleclicked(self, event):
         index = event.text()
         if os.path.isdir(index):
@@ -319,6 +328,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:start help manual")
 
     def mouseMoved(self, event):
+        # 如果没有十字光标，添加
+        self.add_line_and_label_to_plotitem()
         if self.detailplotcheckbox.isChecked() and self.plotcount >= 1:
             if event is None:
                 pass
