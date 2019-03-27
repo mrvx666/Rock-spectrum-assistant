@@ -11,6 +11,8 @@ ticksspacing = 500
 help_manual_page = 6
 # 绘图限制，当绘图板上超过这个限制会提示用户清除图形
 plotlimit = 5
+# 网格透明度
+grid_alpha = 0.7
 # 示例数据
 testdata = "Wavelength	XK1Y08-100000.asd\n" \
            "350	 0.068295808533771 \n" \
@@ -36,6 +38,10 @@ def get_plot_limit():
 
 def get_help_manual_page():
     return int(help_manual_page)
+
+
+def get_grid_alpha():
+    return grid_alpha
 
 
 def get_testdata():
