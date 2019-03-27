@@ -40,7 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # checkbox相关设置
         self.crosshaircheckbox.stateChanged.connect(self.add_line_and_label_to_plotitem)
-        self.showgridcheckbox.stateChanged.connect(lambda:self.show_grid_in_plot_item(self.showgridcheckbox))
+        self.showgridcheckbox.stateChanged.connect(lambda: self.show_grid_in_plot_item(self.showgridcheckbox))
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -78,7 +78,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin = ImageSliderWidget()
         self.About.triggered.connect(self.aboutthisprogram)
         self.searchdialog = searchdialog(self.workdir)
-
         self.notepad = Notepad()
 
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
@@ -333,6 +332,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:start help manual")
 
     def show_grid_in_plot_item(self, checkbox):
+        print(get_grid_alpha())
         self.plotItem.showGrid(x=checkbox.checkState(), y=checkbox.checkState(), alpha=get_grid_alpha())
 
     def mouseMoved(self, event):

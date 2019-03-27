@@ -127,14 +127,14 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QCheckBox" name="detailplotcheckbox">
+          <widget class="QCheckBox" name="crosshaircheckbox">
            <property name="font">
             <font>
              <family>Microsoft YaHei UI</family>
             </font>
            </property>
            <property name="text">
-            <string>DetailPlot</string>
+            <string>Crosshair</string>
            </property>
            <property name="checked">
             <bool>true</bool>

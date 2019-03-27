@@ -12,7 +12,7 @@ from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 import apprcc_rc
 
 QtCore.QTextCodec.setCodecForLocale(QtCore.QTextCodec.codecForName("UTF-8"))
-CONFIG_FILE_PATH = "utils\\notepadconfig.ini"
+CONFIG_FILE_PATH = "config.ini"
 
 
 class Notepad(QtWidgets.QMainWindow):
