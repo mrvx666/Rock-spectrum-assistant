@@ -142,14 +142,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="closesearchchechbox">
+          <widget class="QCheckBox" name="showgridcheckbox">
            <property name="font">
             <font>
              <family>Microsoft YaHei UI</family>
             </font>
            </property>
            <property name="text">
-            <string>AutoCloseSearchResult</string>
+            <string>ShowGrid</string>
            </property>
            <property name="checked">
             <bool>true</bool>

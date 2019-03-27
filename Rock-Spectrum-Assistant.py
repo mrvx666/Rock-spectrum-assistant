@@ -8,7 +8,6 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
                             QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
 import os
-import subprocess
 import pyqtgraph as pg
 
 from utils import *
@@ -40,7 +39,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fistplotflag = True
 
         # checkbox相关设置
-        self.detailplotcheckbox.stateChanged.connect(self.add_line_and_label_to_plotitem)
+        self.crosshaircheckbox.stateChanged.connect(self.add_line_and_label_to_plotitem)
+        self.showgridcheckbox.stateChanged.connect(lambda:self.show_grid_in_plot_item(self.showgridcheckbox))
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -78,6 +78,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin = ImageSliderWidget()
         self.About.triggered.connect(self.aboutthisprogram)
         self.searchdialog = searchdialog(self.workdir)
+
+        self.notepad = Notepad()
+
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
         self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
 
@@ -88,6 +91,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 绘图板鼠标追踪鼠标跟踪
         self.pyqtgraph.setMouseTracking(True)
         self.pyqtgraph.scene().sigMouseMoved.connect(self.mouseMoved)
+
+    def pyqtgraphclick(self):
+        print("click pyqtgraph")
 
     def changworkdir(self, path, isdialogparent=False):
         # 设置treeview工作目录，代码顺序不能颠倒
@@ -136,7 +142,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             try:
                 self.plot(self.mouseindex)
-
             # 捕获异常
             except Exception as e:
                 QMessageBox.information(self, "警告", "文件打开失败\n请检查数据格式\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
@@ -246,9 +251,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
 
     def editdatafile(self, file):
-        # 这里本来是使用os.system()来启动notepad，但是pyinstall打包后运行这段代码会弹出一个dos窗口，所以做此修改
         try:
-            subprocess.check_call("notepad {}".format(file), shell=True)
+            self.notepad.openFileEvent(file)
+            self.notepad.show()
         except Exception as e:
             QMessageBox.critical(self, "警告", "文件编辑不正确\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
         self.statusbar.showMessage("RSA:edit " + file.lstrip(self.workdir))
@@ -271,12 +276,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def on_clearbutton_clicked(self):
         self.pyqtgraph.clear()
-        self.plotcount = 0
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
+        self.plotcount = len(self.axis_y_data_arr)
         self.fistplotflag = True
+        self.showgridcheckbox.setChecked(True)
         self.statusbar.showMessage("RSA:reset")
 
     @pyqtSlot()
@@ -295,13 +301,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def add_line_and_label_to_plotitem(self):
         # 十字光标相关设置,添加元素到绘图元件中
-        if self.detailplotcheckbox.isChecked() and self.fistplotflag:
+        if self.crosshaircheckbox.isChecked() and self.fistplotflag:
             self.label = pg.TextItem()  # 创建一个文本项
             self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
             self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
             self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
             self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
             self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+            if self.showgridcheckbox.isChecked():
+                self.plotItem.showGrid(x=True, y=True, alpha=get_grid_alpha())  # 显示网格
             self.fistplotflag = False
 
     def searchdialogitemdoubleclicked(self, event):
@@ -315,9 +323,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.plotfile()
             self.searchdialog.close()
 
-        if self.closesearchchechbox.isChecked():
-            self.searchdialog.close()
-
     def aboutthisprogram(self):
         self.aboutwin.show()
         self.statusbar.showMessage("RSA:about this program")
@@ -327,8 +332,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin.autoStart()
         self.statusbar.showMessage("RSA:start help manual")
 
+    def show_grid_in_plot_item(self, checkbox):
+        self.plotItem.showGrid(x=checkbox.checkState(), y=checkbox.checkState(), alpha=get_grid_alpha())
+
     def mouseMoved(self, event):
-        if self.detailplotcheckbox.isChecked() and self.plotcount >= 1:
+        if self.crosshaircheckbox.isChecked() and self.plotcount >= 1:
             # 如果没有十字光标，添加
             self.add_line_and_label_to_plotitem()
             if event is None:

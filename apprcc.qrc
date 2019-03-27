@@ -10,4 +10,28 @@
     <file>image/鸽子楼.png</file>
     <file>image/院标(蓝).png</file>
   </qresource>
+  <qresource prefix="Notepadimage">
+    <file>images/about.png</file>
+    <file>images/check.png</file>
+    <file>images/check_no.png</file>
+    <file>images/clear.png</file>
+    <file>images/copy.png</file>
+    <file>images/cut.png</file>
+    <file>images/date.png</file>
+    <file>images/delete.png</file>
+    <file>images/exit.png</file>
+    <file>images/find.png</file>
+    <file>images/font.png</file>
+    <file>images/new.png</file>
+    <file>images/notepad.png</file>
+    <file>images/open.png</file>
+    <file>images/paste.png</file>
+    <file>images/print.png</file>
+    <file>images/qt.png</file>
+    <file>images/replace.png</file>
+    <file>images/reset.png</file>
+    <file>images/save.png</file>
+    <file>images/selectAll.png</file>
+    <file>images/undo.png</file>
+  </qresource>
 </RCC>

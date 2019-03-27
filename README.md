@@ -47,13 +47,17 @@ https://github.com/vfxpipeline/filebrowser
 
 http://www.pyqtgraph.org/documentation/
 
-4.pyqtgraph数据可视化3：使用PyQtGraph绘制精美折线图——以上证指数为例
+4.PyQt5的PyQtGraph实践系列2：绘制股票十字光标K线图
 
-https://zmister.com/archives/220.html
+https://zmister.com/archives/793.html
 
 5.PyQt Examples（PyQt各种测试和例子） 页面切换/图片轮播动画
 
 https://github.com/PyQt5/PyQt/tree/master/QPropertyAnimation
+
+6.Notepad by python3.4+pyqt 作者github/Lowpower
+
+https://github.com/Lowpower/notepad
 
 
 
