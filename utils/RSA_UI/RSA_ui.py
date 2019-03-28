@@ -126,7 +126,7 @@ class Ui_MainWindow(object):
         self.crosshaircheckbox.setText(_translate("MainWindow", "Crosshair"))
         self.showgridcheckbox.setText(_translate("MainWindow", "ShowGrid"))
         self.clearbutton.setText(_translate("MainWindow", "Clear"))
-        self.menuSetting.setTitle(_translate("MainWindow", "Setting"))
+        self.menuSetting.setTitle(_translate("MainWindow", "Modules"))
         self.About.setText(_translate("MainWindow", "About"))
         self.Help.setText(_translate("MainWindow", "Help"))
 

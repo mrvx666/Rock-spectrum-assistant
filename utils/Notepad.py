@@ -8,15 +8,16 @@ import sys, os
 import configparser as parser
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
+from utils.config import get_default_data_file_extension
 
 import apprcc_rc
 
 QtCore.QTextCodec.setCodecForLocale(QtCore.QTextCodec.codecForName("UTF-8"))
 CONFIG_FILE_PATH = "NotepadConfig.ini"
-
+DATA_FILE_EXTENSION = get_default_data_file_extension()
 
 class Notepad(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, workdir=None):
         self.judgeConfigFile()
         """全局变量"""
         # 剪切板
@@ -31,12 +32,17 @@ class Notepad(QtWidgets.QMainWindow):
         self.config = parser.ConfigParser()
         self.config.read(CONFIG_FILE_PATH)
 
+        self.change_workdir(workdir)
+
         QtWidgets.QMainWindow.__init__(self)
         self.initUI()
 
+    def change_workdir(self,workdir):
+        self.workdir = workdir
+
     def initUI(self):
         self.setWindowTitle("无标题 - 记事本")
-        self.setWindowIcon(QtGui.QIcon(":Notepadimage/images/notepad.png"))
+        self.setWindowIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/notepad.png"))
 
         self.initEditText()
 
@@ -105,18 +111,18 @@ class Notepad(QtWidgets.QMainWindow):
         fonts = QtGui.QFont(fontFamile, int(fontSize))
 
         if "True" == wrapMode:
-            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/images/check.png"))
+            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"))
             wrapMode = QtWidgets.QPlainTextEdit.WidgetWidth
         else:
-            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/images/check_no.png"))
+            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check_no.png"))
             wrapMode = QtWidgets.QPlainTextEdit.NoWrap
 
         if "True" == toolbar:
             self.toolBar.show()
-            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/images/check.png"))
+            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"))
         else:
             self.toolBar.hide()
-            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/images/check_no.png"))
+            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check_no.png"))
 
         self.resize(size)
         self.move(pos)
@@ -173,97 +179,97 @@ class Notepad(QtWidgets.QMainWindow):
             f.close()
 
     def createActions(self):
-        self.newAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/new.png"), "&新建", self,
+        self.newAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/new.png"), "&新建", self,
                                            shortcut=QtGui.QKeySequence.New, statusTip="创建文件",
                                            triggered=self.newFile)
 
-        self.openAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/open.png"), "&打开...",
+        self.openAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/open.png"), "&打开...",
                                             self, shortcut=QtGui.QKeySequence.Open,
                                             statusTip="打开文件", triggered=self.openFileEvent)
 
-        self.saveAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/save.png"), "&保存", self,
+        self.saveAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/save.png"), "&保存", self,
                                             shortcut=QtGui.QKeySequence.Save,
                                             statusTip="保存文件", triggered=self.save)
 
-        self.saveAsAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/save.png"), "另存为...", self,
+        self.saveAsAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/save.png"), "另存为...", self,
                                               shortcut=QtGui.QKeySequence.SaveAs,
                                               statusTip="另存文件",
                                               triggered=self.saveAs)
 
-        self.printAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/print.png"), "打印...", self,
+        self.printAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/print.png"), "打印...", self,
                                              shortcut=QtGui.QKeySequence.Print,
                                              statusTip="打印文件",
                                              triggered=self.printText)
 
-        self.exitAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/exit.png"), "退出", self, shortcut="Ctrl+Q",
+        self.exitAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/exit.png"), "退出", self, shortcut="Ctrl+Q",
                                             statusTip="退出程序", triggered=self.close)
 
-        self.undoAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/undo.png"), "撤销", self,
+        self.undoAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/undo.png"), "撤销", self,
                                             shortcut=QtGui.QKeySequence.Undo,
                                             statusTip="撤销编辑",
                                             triggered=self.text.undo)
 
-        self.cutAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/cut.png"), "剪切", self,
+        self.cutAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/cut.png"), "剪切", self,
                                            shortcut=QtGui.QKeySequence.Cut,
                                            statusTip="剪切选中的文本",
                                            triggered=self.text.cut)
 
-        self.copyAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/copy.png"), "复制", self,
+        self.copyAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/copy.png"), "复制", self,
                                             shortcut=QtGui.QKeySequence.Copy,
                                             statusTip="复制选中的文本",
                                             triggered=self.text.copy)
 
-        self.pasteAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/paste.png"), "粘贴", self,
+        self.pasteAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/paste.png"), "粘贴", self,
                                              shortcut=QtGui.QKeySequence.Paste,
                                              statusTip="粘贴剪切板的文本",
                                              triggered=self.text.paste)
 
-        self.clearAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/clear.png"), "清空剪切板", self,
+        self.clearAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/clear.png"), "清空剪切板", self,
                                              statusTip="清空剪切板",
                                              triggered=self.clearClipboard)
 
-        self.deleteAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/delete.png"), "删除", self,
+        self.deleteAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/delete.png"), "删除", self,
                                               statusTip="删除选中的文本",
                                               triggered=self.delete)
 
-        self.findAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/find.png"), "查找", self,
+        self.findAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/find.png"), "查找", self,
                                             statusTip="查找文本", triggered=self.findText, shortcut=QtGui.QKeySequence.Find)
 
-        self.findNextAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/find.png"), "查找下一个", self,
+        self.findNextAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/find.png"), "查找下一个", self,
                                                 statusTip="查找文本", triggered=self.findNextText,
                                                 shortcut=QtGui.QKeySequence.FindNext)
 
-        self.replaceAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/replace.png"), "替换", self,
+        self.replaceAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/replace.png"), "替换", self,
                                                statusTip="替换文本", triggered=self.replaceText,
                                                shortcut=QtGui.QKeySequence.Replace)
 
-        self.selectAllAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/selectAll.png"), "全选", self,
+        self.selectAllAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/selectAll.png"), "全选", self,
                                                  shortcut=QtGui.QKeySequence.SelectAll,
                                                  statusTip="全选",
                                                  triggered=self.text.selectAll)
 
-        self.dateAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/date.png"), "时间/日期", self, shortcut="F5",
+        self.dateAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/date.png"), "时间/日期", self, shortcut="F5",
                                             statusTip="插入时间/日期",
                                             triggered=self.dateEvent)
 
-        self.autoWrapAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/check.png"), "自动换行", self,
+        self.autoWrapAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"), "自动换行", self,
                                                 statusTip="设置自动换行",
                                                 triggered=self.setWrap)
 
-        self.fontAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/font.png"), "字体", self,
+        self.fontAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/font.png"), "字体", self,
                                             statusTip="设置字体", triggered=self.setFont_)
 
-        self.toolBarAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/check.png"), "工具栏", self,
+        self.toolBarAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"), "工具栏", self,
                                                statusTip="工具栏",
                                                triggered=self.toggleToolBar)
 
-        self.resetAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/reset.png"), "重置", self,
+        self.resetAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/reset.png"), "重置", self,
                                              statusTip="重置所有属性",
                                              triggered=self.resetSettings)
 
-        self.aboutAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/about.png"), "关于", self, triggered=self.about)
+        self.aboutAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/about.png"), "关于", self, triggered=self.about)
 
-        self.aboutQtAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/images/qt.png"), "关于Qt", self,
+        self.aboutQtAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/qt.png"), "关于Qt", self,
                                                triggered=QtWidgets.QApplication.instance().aboutQt)
 
         self.undoAction.setEnabled(False)
@@ -351,6 +357,8 @@ class Notepad(QtWidgets.QMainWindow):
     def newFile(self):
         if self.maybeSave():
             self.text.clear()
+        print(self.curFile)
+        print(type(self.curFile))
 
     def maybeSave(self):
         if self.text.document().isModified():
@@ -370,10 +378,9 @@ class Notepad(QtWidgets.QMainWindow):
             # 传入文件直接打开
             if type(fileindex) == str:
                 fileName = fileindex
-                file = QtCore.QFile(fileName)
             else:
                 fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self)
-                file = QtCore.QFile(fileName)
+            file = QtCore.QFile(fileName)
             if not file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
                 QtWidgets.QMessageBox.warning(self, "记事本",
                                               "文件%s不能被读取:\n%s." % (fileName, file.errorString()))
@@ -409,7 +416,9 @@ class Notepad(QtWidgets.QMainWindow):
             return self.saveAs()
 
     def saveAs(self):
-        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self)
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, r'保存数据文件',
+                                       self.workdir,
+                                       r'文本文档(*.txt)')
         if fileName:
             return self.saveFile(fileName)
 
@@ -535,7 +544,6 @@ class Notepad(QtWidgets.QMainWindow):
 
         self.lastSearchText = text
         index = content.find(text, findIndex)
-
         if -1 == index:
             errorDialog = QtWidgets.QMessageBox(self)
             errorDialog.addButton("取消", QtWidgets.QMessageBox.ActionRole)
@@ -658,19 +666,19 @@ class Notepad(QtWidgets.QMainWindow):
         if 1 == mode:
             # 自动换行
             self.text.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
-            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/images/check_no.png"))
+            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check_no.png"))
         else:
             # 不自动换行
             self.text.setLineWrapMode(QtWidgets.QPlainTextEdit.WidgetWidth)
-            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/images/check.png"))
+            self.autoWrapAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"))
 
     def toggleToolBar(self):
         if self.toolBar.isHidden():
             self.toolBar.show()
-            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/images/check.png"))
+            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"))
         else:
             self.toolBar.hide()
-            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/images/check_no.png"))
+            self.toolBarAction.setIcon(QtGui.QIcon(":Notepadimage/image/Notepadimage/check_no.png"))
 
     def setFont_(self):
         font, ok = QtWidgets.QFontDialog.getFont(QtGui.QFont(self.text.toPlainText()), self)
@@ -680,7 +688,8 @@ class Notepad(QtWidgets.QMainWindow):
     def about(self):
         QtWidgets.QMessageBox.about(self, "关于记事本",
                                     "这是仿照Windows系统自带记事本(Nodepad)应用写的一个基于Python_3.4.2 + PyQt_5.4.1的记事本\r\n"
-                                    "作者：LowPower\r\n")
+                                    "作者：LowPower\r\n"
+                                    "被mrvx修改以适用于Rock-spectrum-assistant\r\n")
 
 
 def getConfig(config, selection, option, default=""):
@@ -699,8 +708,6 @@ def writeConfig(config, selection, option, value):
 
     config.set(selection, option, value)
 
-# 设置Windows任务栏的图标
-# ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("nodepad")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

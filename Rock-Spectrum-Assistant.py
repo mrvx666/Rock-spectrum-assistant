@@ -47,20 +47,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 存在，设置路径提示文本框
             self.lineEdit.setText(self.workdir)
             # 设置工作目录
-            self.changworkdir(self.workdir)
+            self.changeworkdir(self.workdir)
         else:
-            # 不存在，提示用户希望进行的操作
-            reply = QMessageBox.question(self, "温馨提示", "没有找到默认数据文件夹，是否浏览目录设置",
-                                         QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-            if reply == QMessageBox.Yes:
-                # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
-                try:
-                    self.on_browsebutton_clicked()
-                except:
-                    self.lineEdit.setText("Click the right side button to set work directory")
-            if reply == QMessageBox.Cancel:
-                # 用户点击No，设置提示
-                self.lineEdit.setText("Click the right side button to set work directory")
+            # 首次启动，要求用户检查是否设置工作目录
+            self.set_work_dir(True)
 
         # 状态栏提示欢迎语
         self.statusbar.showMessage("RSA:Welcome to Rock-Spectrum-Assistant")
@@ -78,7 +68,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin = ImageSliderWidget()
         self.About.triggered.connect(self.aboutthisprogram)
         self.searchdialog = searchdialog(self.workdir)
-        self.notepad = Notepad()
+        self.notepad = Notepad(self.workdir)
 
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
         self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
@@ -94,7 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def pyqtgraphclick(self):
         print("click pyqtgraph")
 
-    def changworkdir(self, path, isdialogparent=False):
+    def changeworkdir(self, path, isdialogflag=False):
         # 设置treeview工作目录，代码顺序不能颠倒
         self.model.setRootPath(path)
         self.treeView.setModel(self.model)
@@ -102,11 +92,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 重设工作目录
         self.workdir = self.model.rootPath()
         # 更换目录做一次清空,仅限不是由子窗口调用的时候
-        if not isdialogparent:
+        if not isdialogflag:
             self.on_clearbutton_clicked()
 
-    def context_menu(self):
+    def set_work_dir(self, firstchangeworkdir=False):
+        if firstchangeworkdir is True:
+            text = "没有找到默认数据文件夹，是否浏览目录设置"
+        else:
+            text = "未选择工作目录，是否浏览目录设置"
+        self.lineEdit.setText("Working directory")
+        self.statusbar.showMessage("Click the browse button to set work directory")
+        # 提示用户希望进行的操作
+        reply = QMessageBox.question(self, "温馨提示", text, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+        if reply == QMessageBox.Yes:
+            # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
+                self.on_browsebutton_clicked()
 
+    def context_menu(self):
         # 设定鼠标点击位置的指针
         index = self.treeView.currentIndex()
         self.mouseindex = self.model.filePath(index)
@@ -174,68 +176,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                    + str(self.plotcount))
 
     def addfile(self):
-        # 如果文件指针为空，赋值到当前工作目录，防止用户点击顶级目录空白处无法正常addfile
-        if self.mouseindex == '':
-            self.mouseindex = self.workdir
-
-        # 弹出对话框，获取文件名；按下ok，okPressed为真
-        filename, okPressed = QInputDialog.getText(self, "文件名", "请输入文件名:", QLineEdit.Normal)
-        fullfilename = filename + get_default_data_filename_extension()
-
-        # 这里默认文件指针指向的是一个目录，拼出完整文件路径
-        fullfilepath = self.mouseindex + os.path.sep + fullfilename
-
-        # 判断文件是否已经存在，如果已经存在就在方法内部处理
-        isfileexists = self.fileexists(fullfilepath)
-        if not isfileexists:
-
-            # 文件不存在，那么文件指针所指向的是一个文件吗？
-            if os.path.isfile(self.mouseindex):
-                # 指针位置是一个文件，获取文件所在目录，修改路径
-                fullfilepath = os.path.dirname(self.mouseindex) + os.path.sep + fullfilename
-                # 修改目录后，用户指定的文件名是否已经存在？如果已经存在就在方法内部处理
-                isfileexists = self.fileexists(fullfilepath)
-
-        # 文件名不为空,用户指定文件不存在，可以执行写入操作
-        if okPressed and filename != '' and not isfileexists:
-            self.statusbar.showMessage("add " + self.mouseindex.lstrip(self.workdir) + os.sep + fullfilename)
-            self.writedatatofile(fullfilepath)
-
-        # 文件名为空，提示用户
-        elif okPressed and filename == '':
-            QMessageBox.information(self, "温馨提示", "未输入文件名", QMessageBox.Close, QMessageBox.Close)
-
-    def fileexists(self, filepath):
-        # 从传入文件路径获取文件名
-        (path, filename) = os.path.split(filepath)
-
-        if os.path.exists(filepath):
-            # 文件存在，询问用户希望的操作模式
-            reply = QMessageBox.question(self, "温馨提示", filename + "文件在目录\n" + path + "\n已经存在，是否进入编辑模式",
-                                        QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-            if reply == QMessageBox.Yes:
-                # 用户点击Yes，进入编辑模式
-                self.editdatafile(filepath)
-            if reply == QMessageBox.Cancel:
-                # 用户点击No，什么也不做
-                pass
-            self.statusbar.showMessage("RSA:" + self.mouseindex.lstrip(self.workdir) + filename + " 文件已存在")
-            return True
-
-        return False
-
-    def writedatatofile(self, filepath):
-        # 弹出提示框让用户输入数据
-        data, ok = QInputDialog.getMultiLineText(self, "请输入数据", "请按照示例数据格式输入：", get_testdata())
-        # 用户按下了ok，不按的话不写入数据
-        if ok:
-            try:
-                f = open(filepath, "w")
-                f.write(data)
-                f.close()
-                self.statusbar.showMessage("RSA:write " + filepath.lstrip(self.workdir) + " 写入成功")
-            except Exception as e:
-                QMessageBox.critical(self, "警告", "文件写入不正确\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
+        self.notepad.newFile()
+        self.notepad.show()
 
     def editfile(self):
         if os.path.isdir(self.mouseindex):
@@ -244,12 +186,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif os.path.isfile(self.mouseindex):
             # 分割文件拓展名，并与默认数据文件拓展名作比较
             file_extension = os.path.splitext(self.mouseindex)[1]
-            if file_extension == get_default_data_filename_extension():
-                self.editdatafile(self.mouseindex)
+            if file_extension == get_default_data_file_extension():
+                self.edit(self.mouseindex)
             else:
                 QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
 
-    def editdatafile(self, file):
+    def edit(self, file):
         try:
             self.notepad.openFileEvent(file)
             self.notepad.show()
@@ -269,8 +211,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # 用户点击Yes，删除文件
                 os.remove(self.mouseindex)
                 self.statusbar.showMessage("RSA:remove " + self.mouseindex.lstrip(self.workdir))
-            if reply == QMessageBox.Cancel:
-                pass
 
     @pyqtSlot()
     def on_clearbutton_clicked(self):
@@ -285,14 +225,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:reset")
 
     @pyqtSlot()
-    def on_browsebutton_clicked(self, path=None, isdialogparent=False):
+    def on_browsebutton_clicked(self, path=None, isdialogflag=False):
         if path is None:
             filedialog = QFileDialog()
             filedialog.setViewMode(QFileDialog.Detail)
             path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
-        self.changworkdir(path, isdialogparent)
-        self.lineEdit.setText(path)
-        self.statusbar.showMessage("RSA:change work dir to " + path)
+        if path == "":
+            self.set_work_dir()
+        else:
+            self.changeworkdir(path, isdialogflag)
+            self.lineEdit.setText(path)
+            # 重设记事本模块工作目录
+            self.notepad.change_workdir(self.workdir)
+
+            self.statusbar.showMessage("RSA:change work dir to " + path)
 
     @pyqtSlot()
     def on_searchbutton_clicked(self):
@@ -314,22 +260,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def searchdialogitemdoubleclicked(self, event):
         index = event.text()
         if os.path.isdir(index):
-            self.on_browsebutton_clicked(index, isdialogparent=True)
+            self.on_browsebutton_clicked(index, isdialogflag=True)
+            self.searchdialog.close()
         elif os.path.isfile(index):
             path = os.path.dirname(index)
-            self.on_browsebutton_clicked(path, isdialogparent=True)
+            self.on_browsebutton_clicked(path, isdialogflag=True)
             self.mouseindex = index
             self.plotfile()
             self.searchdialog.close()
 
     def aboutthisprogram(self):
-        self.aboutwin.show()
         self.statusbar.showMessage("RSA:about this program")
+        self.aboutwin.show()
 
     def helpmanual(self):
+        self.statusbar.showMessage("RSA:start help manual")
         self.helpwin.show()
         self.helpwin.autoStart()
-        self.statusbar.showMessage("RSA:start help manual")
 
     def show_grid_in_plot_item(self, checkbox):
         print(get_grid_alpha())

@@ -187,7 +187,7 @@
    </property>
    <widget class="QMenu" name="menuSetting">
     <property name="title">
-     <string>Setting</string>
+     <string>Modules</string>
     </property>
     <addaction name="Help"/>
     <addaction name="About"/>

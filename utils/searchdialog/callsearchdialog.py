@@ -4,7 +4,7 @@ import os
 import sys
 
 from utils.searchdialog.searchdialogUI import Ui_searchdialog
-from utils.config import get_default_data_filename_extension
+from utils.config import get_default_data_file_extension
 
 workdir1 = ".." + os.sep + ".." + os.sep + "data"
 
@@ -34,7 +34,7 @@ class searchdialog(QDialog, Ui_searchdialog):
 
             for file in files:  # 遍历目录下的文件
                 fullfilepath = root + os.sep + file
-                if os.path.splitext(fullfilepath)[1] == get_default_data_filename_extension():  # 匹配默认数据格式
+                if os.path.splitext(fullfilepath)[1] == get_default_data_file_extension():  # 匹配默认数据格式
                     if keyword in file:
                         self.add_to_list(fullfilepath)
 

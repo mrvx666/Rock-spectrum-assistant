@@ -4,7 +4,7 @@
 # 本软件的默认工作目录
 workdir = "data"
 # 数据文件的拓展名
-data_filename_extension = ".txt"
+default_data_file_extension = ".txt"
 # 绘图间隔
 ticksspacing = 500
 # 帮助手册图片数目
@@ -24,8 +24,8 @@ def get_default_workdir():
     return workdir
 
 
-def get_default_data_filename_extension():
-    return data_filename_extension
+def get_default_data_file_extension():
+    return default_data_file_extension
 
 
 def get_ticks_spacing():
