@@ -35,12 +35,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 声明两个数组，用于向鼠标追踪方法传递数据
         self.axis_y_data_arr = []
         self.axis_x_dict_arr = []
-        # 这个标志是用来防止重复添加绘图板上的十字线
-        self.fistplotflag = True
 
         # checkbox相关设置
-        self.crosshaircheckbox.stateChanged.connect(self.add_line_and_label_to_plotitem)
-        self.showgridcheckbox.stateChanged.connect(lambda: self.show_grid_in_plot_item(self.showgridcheckbox))
+        self.crosshaircheckbox.stateChanged.connect(lambda: self.crosshaircheckboxstateChanged(self.crosshaircheckbox))
+        self.showgridcheckbox.stateChanged.connect(lambda: self.showgridcheckboxstateChanged(self.showgridcheckbox))
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -49,7 +47,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 设置工作目录
             self.changeworkdir(self.workdir)
         else:
-            # 首次启动，要求用户检查是否设置工作目录
+            # 首次启动，默认工作目录未找到，询问用户是否设置工作目录
             self.set_work_dir(True)
 
         # 状态栏提示欢迎语
@@ -68,6 +66,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin = ImageSliderWidget()
         self.About.triggered.connect(self.aboutthisprogram)
         self.searchdialog = searchdialog(self.workdir)
+        self.Notepad.triggered.connect(self.notepadwin)
         self.notepad = Notepad(self.workdir)
 
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
@@ -81,9 +80,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pyqtgraph.setMouseTracking(True)
         self.pyqtgraph.scene().sigMouseMoved.connect(self.mouseMoved)
 
-    def pyqtgraphclick(self):
-        print("click pyqtgraph")
-
     def changeworkdir(self, path, isdialogflag=False):
         # 设置treeview工作目录，代码顺序不能颠倒
         self.model.setRootPath(path)
@@ -94,19 +90,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 更换目录做一次清空,仅限不是由子窗口调用的时候
         if not isdialogflag:
             self.on_clearbutton_clicked()
-
-    def set_work_dir(self, firstchangeworkdir=False):
-        if firstchangeworkdir is True:
-            text = "没有找到默认数据文件夹，是否浏览目录设置"
-        else:
-            text = "未选择工作目录，是否浏览目录设置"
-        self.lineEdit.setText("Working directory")
-        self.statusbar.showMessage("Click the browse button to set work directory")
-        # 提示用户希望进行的操作
-        reply = QMessageBox.question(self, "温馨提示", text, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-        if reply == QMessageBox.Yes:
-            # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
-                self.on_browsebutton_clicked()
 
     def context_menu(self):
         # 设定鼠标点击位置的指针
@@ -136,7 +119,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 判断是文件指针指向的是一个目录还是文件
         if os.path.isdir(self.mouseindex) or self.mouseindex == "":
             # 指向一个目录，提示用户
-            QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
+            QMessageBox.information(self, "温馨提示", "选择的是一个目录，请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
 
             # 指向一个文件，尝试读取数据
         elif os.path.isfile(self.mouseindex):
@@ -166,8 +149,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stringaxis.setTicks([axis_x_data, x_dict.items()])
         self.pyqtgraph.plot(x=list(x_dict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
 
-        # 如果没有十字光标，添加
-        self.add_line_and_label_to_plotitem()
+        self.crosshaircheckboxstateChanged(self.crosshaircheckbox)
 
         # 用数据数组长度来给绘图计数器赋值
         self.plotcount = len(self.axis_y_data_arr)
@@ -176,28 +158,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                    + str(self.plotcount))
 
     def addfile(self):
-        self.notepad.newFile()
+        self.statusbar.showMessage("RSA:add file")
+        self.notepad.newFile(get_testdata())
         self.notepad.show()
 
     def editfile(self):
         if os.path.isdir(self.mouseindex):
             # 打开的是一个目录而不是一个文件时提示用户
-            QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
+            QMessageBox.information(self, "温馨提示", "选择的是一个目录，请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
         elif os.path.isfile(self.mouseindex):
             # 分割文件拓展名，并与默认数据文件拓展名作比较
             file_extension = os.path.splitext(self.mouseindex)[1]
             if file_extension == get_default_data_file_extension():
                 self.edit(self.mouseindex)
             else:
-                QMessageBox.information(self, "温馨提示", "请选择一个数据文件", QMessageBox.Close, QMessageBox.Close)
+                QMessageBox.information(self, "温馨提示", "文件拓展名与数据库默认拓展名不相符", QMessageBox.Close, QMessageBox.Close)
 
     def edit(self, file):
-        try:
-            self.notepad.openFileEvent(file)
-            self.notepad.show()
-        except Exception as e:
-            QMessageBox.critical(self, "警告", "文件编辑不正确\n{}".format(e), QMessageBox.Close, QMessageBox.Close)
         self.statusbar.showMessage("RSA:edit " + file.lstrip(self.workdir))
+        self.notepad.openFileEvent(file)
+        self.notepad.show()
 
     def removefile(self):
         if os.path.isdir(self.mouseindex):
@@ -211,6 +191,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # 用户点击Yes，删除文件
                 os.remove(self.mouseindex)
                 self.statusbar.showMessage("RSA:remove " + self.mouseindex.lstrip(self.workdir))
+            if reply == QMessageBox.Cancel:
+                pass
 
     @pyqtSlot()
     def on_clearbutton_clicked(self):
@@ -220,42 +202,63 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
         self.plotcount = len(self.axis_y_data_arr)
-        self.fistplotflag = True
-        self.showgridcheckbox.setChecked(True)
         self.statusbar.showMessage("RSA:reset")
 
     @pyqtSlot()
     def on_browsebutton_clicked(self, path=None, isdialogflag=False):
         if path is None:
-            filedialog = QFileDialog()
-            filedialog.setViewMode(QFileDialog.Detail)
-            path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
-        if path == "":
-            self.set_work_dir()
+            path = self.get_path_from_user()
+
+        # TODO:当窗口返回的是工作目录是空字符串，重复要求用户设置
+        if path == '':
+            self.set_work_dir(False)
+
         else:
             self.changeworkdir(path, isdialogflag)
             self.lineEdit.setText(path)
             # 重设记事本模块工作目录
-            self.notepad.change_workdir(self.workdir)
-
+            self.notepad.changeworkdir(self.workdir)
             self.statusbar.showMessage("RSA:change work dir to " + path)
+
+    def set_work_dir(self, firstworkdirflag=False):
+        if firstworkdirflag is True:
+            text = "没有找到默认数据文件夹，是否浏览目录设置"
+        else:
+            text = "未选择工作目录，是否浏览目录设置"
+        self.lineEdit.setText("Working directory")
+        reply = QMessageBox.question(self, "温馨提示", text, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+        if reply == QMessageBox.Yes:
+            # 用户点击Yes，设置工作目录,模拟用户点击浏览按钮
+            self.on_browsebutton_clicked()
+        if reply == QMessageBox.Cancel:
+            pass
+
+    # 我是不想搞这个额外的方法的，但是如果不做分离上面两个函数不正常
+    def get_path_from_user(self):
+        filedialog = QFileDialog()
+        filedialog.setViewMode(QFileDialog.Detail)
+        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
+        return path
 
     @pyqtSlot()
     def on_searchbutton_clicked(self):
         self.searchdialog.show()
 
-    def add_line_and_label_to_plotitem(self):
+    def crosshaircheckboxstateChanged(self, checkbox):
         # 十字光标相关设置,添加元素到绘图元件中
-        if self.crosshaircheckbox.isChecked() and self.fistplotflag:
+        if checkbox.isChecked():
             self.label = pg.TextItem()  # 创建一个文本项
             self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
             self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
             self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
             self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
             self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
-            if self.showgridcheckbox.isChecked():
-                self.plotItem.showGrid(x=True, y=True, alpha=get_grid_alpha())  # 显示网格
-            self.fistplotflag = False
+            self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
+        # 如果用户取消了checkbox的状态，那就删除这三个item
+        if not checkbox.isChecked():
+            self.plotItem.removeItem(self.hLine)
+            self.plotItem.removeItem(self.vLine)
+            self.plotItem.removeItem(self.label)
 
     def searchdialogitemdoubleclicked(self, event):
         index = event.text()
@@ -278,14 +281,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.helpwin.show()
         self.helpwin.autoStart()
 
-    def show_grid_in_plot_item(self, checkbox):
-        print(get_grid_alpha())
+    def notepadwin(self):
+        self.statusbar.showMessage("RSA:start notepad")
+        self.notepad.show()
+
+    def showgridcheckboxstateChanged(self, checkbox):
         self.plotItem.showGrid(x=checkbox.checkState(), y=checkbox.checkState(), alpha=get_grid_alpha())
 
     def mouseMoved(self, event):
+        # 必须勾选crosshair的checkbox且绘图板上有图形才会进行鼠标追踪
         if self.crosshaircheckbox.isChecked() and self.plotcount >= 1:
-            # 如果没有十字光标，添加
-            self.add_line_and_label_to_plotitem()
             if event is None:
                 pass
             else:
