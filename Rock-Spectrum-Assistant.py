@@ -6,7 +6,7 @@
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel,\
-                            QMenu, QMessageBox, QFileDialog, QInputDialog, QLineEdit
+                            QMenu, QMessageBox, QFileDialog
 import os
 import pyqtgraph as pg
 
@@ -63,11 +63,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 载入子窗体
         self.aboutwin = aboutDialog()
         self.Help.triggered.connect(self.helpmanual)
-        self.helpwin = ImageSliderWidget()
+        self.helpwin = helpdialog()
         self.About.triggered.connect(self.aboutthisprogram)
         self.searchdialog = searchdialog(self.workdir)
-        self.Notepad.triggered.connect(self.notepadwin)
         self.notepad = Notepad(self.workdir)
+        self.Notepad.triggered.connect(self.notepadwin)
 
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
         self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
@@ -255,7 +255,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
             self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
         # 如果用户取消了checkbox的状态，那就删除这三个item
-        if not checkbox.isChecked():
+        if not checkbox.isChecked() and self.plotcount >= 1:
             self.plotItem.removeItem(self.hLine)
             self.plotItem.removeItem(self.vLine)
             self.plotItem.removeItem(self.label)
@@ -279,7 +279,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def helpmanual(self):
         self.statusbar.showMessage("RSA:start help manual")
         self.helpwin.show()
-        self.helpwin.autoStart()
 
     def notepadwin(self):
         self.statusbar.showMessage("RSA:start notepad")

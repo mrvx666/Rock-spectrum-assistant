@@ -1,23 +1,8 @@
 # Rock spectrum assistant
-hello，看到这个文档的朋友。
-Rock spectrum assistant是一个基于Qt5架构和Python3语言开发的简单绘图小程序。本项目2018年11月立项，2018年12月正式开始开发。
+
 
 使用说明：
-
-1.程序默认读取同目录下的data文件夹作为工作目录，如果data文件夹不存在，您可以手动指定目录
-
-2.在右侧文件操作区，单机鼠标右键弹出菜单，即可使用“绘图”、“添加文件”、“编辑文件”、“删除文件功能”
-
-3.当您进行了一个绘图，可以在绘图区域用鼠标滚轮放大，或者按住鼠标左键拖动绘图区域
-
-4.右下角“清除绘图”按钮用于清除绘画板上已经绘出的曲线
-
-5.当您想使用十字线绘图模式时，请点击位于下侧的detailpolt，然后再选择一个文件点击polt，即可用新窗口绘制一个图形
-
-6.本软件的设置位于until\config.py下，只有一些最简单的参数设置，不建议进行修改
-
-Note：当你在pycharm中导入代码时，请在pycharm左侧目录树，右击ui和until两个文件夹，选择Make Directory As → Souces Root，否则在pycharm中run会报错
-
+https://docs.qq.com/doc/DWkNmQ3VDZVJuVlVu
 
 TO DO List：
 
@@ -51,9 +36,9 @@ http://www.pyqtgraph.org/documentation/
 
 https://zmister.com/archives/793.html
 
-5.PyQt Examples（PyQt各种测试和例子） 页面切换/图片轮播动画
+5.实战 | 如何用Python实现一个图形界面的文件内容搜索程序？
 
-https://github.com/PyQt5/PyQt/tree/master/QPropertyAnimation
+https://zmister.com/archives/802.html
 
 6.Notepad by python3.4+pyqt 作者github/Lowpower
 

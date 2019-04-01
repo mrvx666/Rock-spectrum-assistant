@@ -8,7 +8,7 @@ import sys, os
 import configparser as parser
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from utils.config import get_default_data_file_extension
+from utils.config import get_default_data_file_extension, get_testdata
 
 import apprcc_rc
 
@@ -32,12 +32,12 @@ class Notepad(QtWidgets.QMainWindow):
         self.config = parser.ConfigParser()
         self.config.read(CONFIG_FILE_PATH)
 
-        self.change_workdir(workdir)
+        self.changeworkdir(workdir)
 
         QtWidgets.QMainWindow.__init__(self)
         self.initUI()
 
-    def change_workdir(self,workdir):
+    def changeworkdir(self,workdir):
         self.workdir = workdir
 
     def initUI(self):
@@ -201,8 +201,8 @@ class Notepad(QtWidgets.QMainWindow):
                                              statusTip="打印文件",
                                              triggered=self.printText)
 
-        self.exitAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/exit.png"), "退出", self, shortcut="Ctrl+Q",
-                                            statusTip="退出程序", triggered=self.close)
+        self.exitAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/exit.png"), "退出", self,
+                                            shortcut="Ctrl+Q",statusTip="退出程序", triggered=self.close)
 
         self.undoAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/undo.png"), "撤销", self,
                                             shortcut=QtGui.QKeySequence.Undo,
@@ -233,14 +233,18 @@ class Notepad(QtWidgets.QMainWindow):
                                               triggered=self.delete)
 
         self.findAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/find.png"), "查找", self,
-                                            statusTip="查找文本", triggered=self.findText, shortcut=QtGui.QKeySequence.Find)
+                                            statusTip="查找文本",
+                                            triggered=self.findText,
+                                            shortcut=QtGui.QKeySequence.Find)
 
         self.findNextAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/find.png"), "查找下一个", self,
-                                                statusTip="查找文本", triggered=self.findNextText,
+                                                statusTip="查找文本",
+                                                triggered=self.findNextText,
                                                 shortcut=QtGui.QKeySequence.FindNext)
 
         self.replaceAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/replace.png"), "替换", self,
-                                               statusTip="替换文本", triggered=self.replaceText,
+                                               statusTip="替换文本",
+                                               triggered=self.replaceText,
                                                shortcut=QtGui.QKeySequence.Replace)
 
         self.selectAllAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/selectAll.png"), "全选", self,
@@ -248,7 +252,8 @@ class Notepad(QtWidgets.QMainWindow):
                                                  statusTip="全选",
                                                  triggered=self.text.selectAll)
 
-        self.dateAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/date.png"), "时间/日期", self, shortcut="F5",
+        self.dateAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/date.png"), "时间/日期", self,
+                                            shortcut="F5",
                                             statusTip="插入时间/日期",
                                             triggered=self.dateEvent)
 
@@ -257,7 +262,8 @@ class Notepad(QtWidgets.QMainWindow):
                                                 triggered=self.setWrap)
 
         self.fontAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/font.png"), "字体", self,
-                                            statusTip="设置字体", triggered=self.setFont_)
+                                            statusTip="设置字体",
+                                            triggered=self.setFont_)
 
         self.toolBarAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/check.png"), "工具栏", self,
                                                statusTip="工具栏",
@@ -267,7 +273,8 @@ class Notepad(QtWidgets.QMainWindow):
                                              statusTip="重置所有属性",
                                              triggered=self.resetSettings)
 
-        self.aboutAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/about.png"), "关于", self, triggered=self.about)
+        self.aboutAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/about.png"), "关于", self,
+                                             triggered=self.about)
 
         self.aboutQtAction = QtWidgets.QAction(QtGui.QIcon(":Notepadimage/image/Notepadimage/qt.png"), "关于Qt", self,
                                                triggered=QtWidgets.QApplication.instance().aboutQt)
@@ -354,11 +361,11 @@ class Notepad(QtWidgets.QMainWindow):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.clearAction)
 
-    def newFile(self):
+    def newFile(self, data=None):
         if self.maybeSave():
             self.text.clear()
-        print(self.curFile)
-        print(type(self.curFile))
+        if data is not None:
+            self.text.setPlainText(data)
 
     def maybeSave(self):
         if self.text.document().isModified():

@@ -1,12 +1,7 @@
 <RCC>
   <qresource prefix="image">
+    <file>image/help_documentation_url-QRcode.png</file>
     <file>image/JLUgeo.ico</file>
-    <file>image/helpimage/help (1).png</file>
-    <file>image/helpimage/help (2).png</file>
-    <file>image/helpimage/help (3).png</file>
-    <file>image/helpimage/help (4).png</file>
-    <file>image/helpimage/help (5).png</file>
-    <file>image/helpimage/help (6).png</file>
     <file>image/鸽子楼.png</file>
     <file>image/院标(蓝).png</file>
   </qresource>

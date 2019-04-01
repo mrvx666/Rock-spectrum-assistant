@@ -189,6 +189,8 @@
     <property name="title">
      <string>Modules</string>
     </property>
+    <addaction name="Notepad"/>
+    <addaction name="separator"/>
     <addaction name="Help"/>
     <addaction name="About"/>
    </widget>
@@ -207,6 +209,11 @@
   <action name="Help">
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="Notepad">
+   <property name="text">
+    <string>Notepad</string>
    </property>
   </action>
  </widget>

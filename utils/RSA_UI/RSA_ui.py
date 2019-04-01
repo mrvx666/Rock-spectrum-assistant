@@ -107,6 +107,10 @@ class Ui_MainWindow(object):
         self.About.setObjectName("About")
         self.Help = QtWidgets.QAction(MainWindow)
         self.Help.setObjectName("Help")
+        self.Notepad = QtWidgets.QAction(MainWindow)
+        self.Notepad.setObjectName("Notepad")
+        self.menuSetting.addAction(self.Notepad)
+        self.menuSetting.addSeparator()
         self.menuSetting.addAction(self.Help)
         self.menuSetting.addAction(self.About)
         self.menuBar.addAction(self.menuSetting.menuAction())
@@ -129,6 +133,7 @@ class Ui_MainWindow(object):
         self.menuSetting.setTitle(_translate("MainWindow", "Modules"))
         self.About.setText(_translate("MainWindow", "About"))
         self.Help.setText(_translate("MainWindow", "Help"))
+        self.Notepad.setText(_translate("MainWindow", "Notepad"))
 
 
 from pyqtgraph import PlotWidget

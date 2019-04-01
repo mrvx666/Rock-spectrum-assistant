@@ -7,12 +7,12 @@ workdir = "data"
 default_data_file_extension = ".txt"
 # 绘图间隔
 ticksspacing = 500
-# 帮助手册图片数目
-help_manual_page = 6
 # 绘图限制，当绘图板上超过这个限制会提示用户清除图形
 plotlimit = 5
 # 网格透明度
 grid_alpha = 0.7
+# 在线说明网址
+help_documentation_url = "https://docs.qq.com/doc/DWkNmQ3VDZVJuVlVu"
 # 示例数据
 testdata = "Wavelength	XK1Y08-100000.asd\n" \
            "350	 0.068295808533771 \n" \
@@ -36,12 +36,12 @@ def get_plot_limit():
     return int(plotlimit)
 
 
-def get_help_manual_page():
-    return int(help_manual_page)
-
-
 def get_grid_alpha():
     return grid_alpha
+
+
+def get_help_documentation_url():
+    return help_documentation_url
 
 
 def get_testdata():
