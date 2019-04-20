@@ -36,10 +36,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.axis_y_data_arr = []
         self.axis_x_dict_arr = []
 
-        # checkbox相关设置
-        self.crosshaircheckbox.stateChanged.connect(lambda: self.crosshaircheckboxstateChanged(self.crosshaircheckbox))
-        self.showgridcheckbox.stateChanged.connect(lambda: self.showgridcheckboxstateChanged(self.showgridcheckbox))
-
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
             # 存在，设置路径提示文本框
@@ -71,6 +67,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
         self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
+
+        # checkbox相关设置
+        self.crosshaircheckbox.stateChanged.connect(lambda: self.crosshaircheckboxstateChanged(self.crosshaircheckbox))
+        self.showgridcheckbox.stateChanged.connect(lambda: self.showgridcheckboxstateChanged(self.showgridcheckbox))
 
         # treeView右键菜单关联
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
