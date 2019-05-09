@@ -141,7 +141,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 载入数据，如果数据格式有变化这里会报错
         data = load_data(file)
-        filepath,filename = os.path.split(file)
+        filepath, filename = os.path.split(file)
 
         # 获取用来设置x轴坐标轴文字的数据
         x_dict = self.set_axix_x_data(data)
@@ -170,7 +170,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) +
                                    " ，当前绘图总数 "+ str(self.plotcount))
 
-    #TODO：恢复默认坐标值不生效
+    # TODO：恢复默认坐标值不生效
     def set_axix_x_data(self, data=None):
         stringaxis = self.plotItem.getAxis(name='bottom')
         # 如果没有数据传入，坐标值设为默认值
@@ -225,9 +225,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
         # 清空图例栏的内容
-        DataItems_list = self.plotItem.listDataItems()
-        for item in DataItems_list:
-            self.plotItem.legend.removeItem(name=item.name())
+        if self.plotItem.legend is not None:
+            DataItems_list = self.plotItem.listDataItems()
+            for item in DataItems_list:
+                self.plotItem.legend.removeItem(name=item.name())
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
         self.pyqtgraph.clear()
@@ -276,7 +277,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def crosshaircheckboxstateChanged(self, checkbox):
         # 十字光标相关设置,添加元素到绘图元件中
-        if checkbox.isChecked() and self.plotcount == 0:
+        if checkbox.isChecked():
             self.label = pg.TextItem()  # 创建一个文本项
             self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
             self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
