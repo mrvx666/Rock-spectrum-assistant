@@ -32,9 +32,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 获取pyqtgraph绘图对象
         self.plotItem = self.pyqtgraph.getPlotItem()
 
-        # 声明两个数组，用于向鼠标追踪方法传递数据
+        # 初始化两个数组，用于向鼠标追踪方法传递数据
         self.axis_y_data_arr = []
         self.axis_x_dict_arr = []
+        self.plotcount = 0
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -45,6 +46,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             # 首次启动，默认工作目录未找到，询问用户是否设置工作目录
             self.set_work_dir(True)
+
+        # 数据图例标志，防止重复添加
+        self.firstlegendflag = True
 
         # 状态栏提示欢迎语
         self.statusbar.showMessage("RSA:Welcome to Rock-Spectrum-Assistant")
@@ -132,6 +136,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.statusbar.showMessage("RSA:please check the data file format")
 
     def plot(self, file):
+
         # 选取画笔颜色，防止溢出
         colorindex = self.plotcount
         if self.plotcount > len(color) - 1:
@@ -139,23 +144,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 载入数据，如果数据格式有变化这里会报错
         data = load_data(file)
-        self.axis_y_data_arr.append(data)
+        filepath,filename = os.path.split(file)
 
-        # 将数据表索引（波长）转换为绘图时的坐标轴数据
-        x_dict = dict(enumerate(data.index))
+        # 获取用来设置x轴坐标轴文字的数据
+        x_dict = self.set_axix_x_data(data)
+
+        # 将数据保存到数组用于鼠标追踪调用
+        self.axis_y_data_arr.append(data)
         self.axis_x_dict_arr.append(x_dict)
-        axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), get_ticks_spacing())]
-        stringaxis = self.plotItem.getAxis(name='bottom')
-        stringaxis.setTicks([axis_x_data, x_dict.items()])
-        self.pyqtgraph.plot(x=list(x_dict.keys()), y=data.iloc[:, 0].values, pen=color[colorindex])
+        self.pyqtgraph.plot(x=list(x_dict.keys()), y=data.iloc[:, 0].values,
+                            pen=color[colorindex],
+                            name=filename,
+                            antialias=True)
 
         self.crosshaircheckboxstateChanged(self.crosshaircheckbox)
 
         # 用数据数组长度来给绘图计数器赋值
         self.plotcount = len(self.axis_y_data_arr)
+
+        # 添加图例,仅第二次绘图运行
+        if self.plotcount == 2 and self.firstlegendflag:
+            self.plotItem.addLegend()
+            DataItem_list = self.plotItem.listDataItems()
+            for item in DataItem_list:
+                self.plotItem.legend.addItem(item=item, name=item.name())
+            self.firstlegendflag = False
+
         # 在状态栏上显示当前绘图的文件和绘图总数
-        self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) + " ，当前绘图总数 "
-                                   + str(self.plotcount))
+        self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) +
+                                   " ，当前绘图总数 "+ str(self.plotcount))
+
+    def set_axix_x_data(self, data=None):
+        stringaxis = self.plotItem.getAxis(name='bottom')
+        if data is None:
+            stringaxis.setTickSpacing(300, 100)
+        else:
+            # 将数据表索引（波长）转换为绘图时的坐标轴数据
+            x_dict = dict(enumerate(data.index))
+            axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), get_ticks_spacing())]
+            stringaxis.setTicks([axis_x_data, x_dict.items()])
+            return x_dict
 
     def addfile(self):
         self.statusbar.showMessage("RSA:add file")
@@ -183,7 +211,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if os.path.isdir(self.mouseindex):
             QMessageBox.question(self, "温馨提示", "您所选择的是一个文件夹\n出于数据安全考虑\n本程序不提供删除文件夹功能", QMessageBox.Close, QMessageBox.Close)
         elif os.path.isfile(self.mouseindex):
-            (filepath, filename) = os.path.split(self.mouseindex)
+            filepath, filename = os.path.split(self.mouseindex)
             reply = QMessageBox.warning(self, "温馨提示", "是否确定删除文件"+filename,
                                         QMessageBox.Yes | QMessageBox.Cancel,
                                         QMessageBox.Cancel)
@@ -196,11 +224,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def on_clearbutton_clicked(self):
-        self.pyqtgraph.clear()
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
+        if self.plotcount >= 1:
+            DataItems_list = self.plotItem.listDataItems()
+            for item in DataItems_list:
+                self.plotItem.legend.removeItem(name=item.name())
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
+        self.pyqtgraph.clear()
         self.plotcount = len(self.axis_y_data_arr)
         self.statusbar.showMessage("RSA:reset")
 
@@ -246,7 +278,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def crosshaircheckboxstateChanged(self, checkbox):
         # 十字光标相关设置,添加元素到绘图元件中
-        if checkbox.isChecked():
+        if checkbox.isChecked() and self.plotcount == 0:
             self.label = pg.TextItem()  # 创建一个文本项
             self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
             self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
@@ -285,7 +317,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.notepad.show()
 
     def showgridcheckboxstateChanged(self, checkbox):
-        self.plotItem.showGrid(x=checkbox.checkState(), y=checkbox.checkState(), alpha=get_grid_alpha())
+        if checkbox.checkState():
+            self.plotItem.showGrid(x=True, y=True, alpha=get_grid_alpha())
+        else:
+            self.plotItem.showGrid(x=False, y=False)
+            self.set_axix_x_data()
 
     def mouseMoved(self, event):
         # 必须勾选crosshair的checkbox且绘图板上有图形才会进行鼠标追踪
