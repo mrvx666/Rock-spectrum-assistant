@@ -47,9 +47,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 首次启动，默认工作目录未找到，询问用户是否设置工作目录
             self.set_work_dir(True)
 
-        # 数据图例标志，防止重复添加
-        self.firstlegendflag = True
-
         # 状态栏提示欢迎语
         self.statusbar.showMessage("RSA:Welcome to Rock-Spectrum-Assistant")
 
@@ -163,19 +160,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plotcount = len(self.axis_y_data_arr)
 
         # 添加图例,仅第二次绘图运行
-        if self.plotcount == 2 and self.firstlegendflag:
+        if self.plotcount == 2 and self.plotItem.legend is None:
             self.plotItem.addLegend()
             DataItem_list = self.plotItem.listDataItems()
             for item in DataItem_list:
                 self.plotItem.legend.addItem(item=item, name=item.name())
-            self.firstlegendflag = False
 
         # 在状态栏上显示当前绘图的文件和绘图总数
         self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) +
                                    " ，当前绘图总数 "+ str(self.plotcount))
 
+    #TODO：恢复默认坐标值不生效
     def set_axix_x_data(self, data=None):
         stringaxis = self.plotItem.getAxis(name='bottom')
+        # 如果没有数据传入，坐标值设为默认值
         if data is None:
             stringaxis.setTickSpacing(300, 100)
         else:
@@ -226,10 +224,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_clearbutton_clicked(self):
         self.plotItem.getAxis('bottom').setTicks(ticks=None)
         self.plotItem.getAxis('right').setTicks(ticks=None)
-        if self.plotcount >= 1:
-            DataItems_list = self.plotItem.listDataItems()
-            for item in DataItems_list:
-                self.plotItem.legend.removeItem(name=item.name())
+        # 清空图例栏的内容
+        DataItems_list = self.plotItem.listDataItems()
+        for item in DataItems_list:
+            self.plotItem.legend.removeItem(name=item.name())
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
         self.pyqtgraph.clear()
