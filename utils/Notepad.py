@@ -16,6 +16,7 @@ QtCore.QTextCodec.setCodecForLocale(QtCore.QTextCodec.codecForName("UTF-8"))
 CONFIG_FILE_PATH = "NotepadConfig.ini"
 DATA_FILE_EXTENSION = get_default_data_file_extension()
 
+
 class Notepad(QtWidgets.QMainWindow):
     def __init__(self, workdir=None):
         self.judgeConfigFile()

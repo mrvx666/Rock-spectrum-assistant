@@ -6,7 +6,7 @@ import sys
 from utils.searchdialog.searchdialogUI import Ui_searchdialog
 from utils.config import get_default_data_file_extension
 
-workdir1 = ".." + os.sep + ".." + os.sep + "data"
+Test_workdir = ".." + os.sep + ".." + os.sep + "data"
 
 
 class searchdialog(QDialog, Ui_searchdialog):
@@ -52,7 +52,7 @@ class searchdialog(QDialog, Ui_searchdialog):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    sd = searchdialog(workdir1)
+    sd = searchdialog(Test_workdir)
     sd.show()
     sys.exit(app.exec_())
 

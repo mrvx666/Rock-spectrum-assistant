@@ -338,7 +338,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         # TODO:如果多次载入数据长度不一样，这里可能会引发错误
                         if -1 < index < len(self.axis_y_data_arr[0].index):
                             # 在label中写入HTML
-                            self.label.setHtml(self.generatemousetrackinglabel(self.plotcount, index))
+                            self.label.setHtml(self.generate_mousetracking_label(self.plotcount, index))
                             self.label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.vLine.setPos(mousePoint.x())
@@ -347,7 +347,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     QMessageBox.information(self, "提示", "鼠标追踪错误\n{}".format(e), QMessageBox.Close,
                                             QMessageBox.Close)
 
-    def generatemousetrackinglabel(self, count, index):
+    def generate_mousetracking_label(self, count, index):
         labletext = ""
         for i in range(count):
             labletext = labletext + "<p style='color:white'><strong>波长：{} 数据：{}</strong></p>"\
@@ -359,6 +359,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         reply = QMessageBox.warning(self, "温馨提示", "即将退出RSA, 确定？", QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Yes)
         if reply == QMessageBox.Yes:
             QCloseEvent.accept()
+            # 关闭所有子窗体
+            self.aboutwin.close()
+            self.helpwin.close()
+            self.searchdialog.close()
+            self.notepad.close()
         if reply == QMessageBox.Cancel:
             QCloseEvent.ignore()
 

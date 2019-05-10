@@ -1,8 +1,9 @@
 <RCC>
   <qresource prefix="image">
-    <file>image/help_documentation_url-QRcode.png</file>
-    <file>image/JLUgeo.ico</file>
     <file>image/鸽子楼.png</file>
+    <file>image/help_documentation_url-QRcode.png</file>
+    <file>image/Author_QQ-QRcode.jpg</file>
+    <file>image/JLUgeo.ico</file>
     <file>image/院标(蓝).png</file>
   </qresource>
   <qresource prefix="Notepadimage">
