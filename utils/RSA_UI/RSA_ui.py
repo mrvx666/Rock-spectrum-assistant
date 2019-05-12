@@ -72,7 +72,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
         self.crosshaircheckbox.setFont(font)
-        self.crosshaircheckbox.setChecked(True)
         self.crosshaircheckbox.setObjectName("crosshaircheckbox")
         self.verticalLayout.addWidget(self.crosshaircheckbox)
         self.showgridcheckbox = QtWidgets.QCheckBox(self.verticalLayoutWidget_2)
