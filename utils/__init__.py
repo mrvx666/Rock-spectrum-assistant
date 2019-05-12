@@ -6,5 +6,6 @@ from utils.loaddata import load_data
 from utils.config import get_default_workdir, \
     get_default_data_file_extension, \
     get_testdata, get_ticks_spacing, get_plot_limit, \
-    get_grid_alpha, get_help_documentation_url
+    get_grid_alpha, get_x_axis_lable, get_y_axis_lable, \
+    get_help_documentation_url
 from utils.Notepad import Notepad

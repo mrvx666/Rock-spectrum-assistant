@@ -29,9 +29,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 初始化文件管理器
         self.model = QFileSystemModel()
 
-        # 获取pyqtgraph绘图对象
-        self.plotItem = self.pyqtgraph.getPlotItem()
-
         # 初始化两个数组，用于向鼠标追踪方法传递数据
         self.axis_y_data_arr = []
         self.axis_x_dict_arr = []
@@ -80,6 +77,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 绘图板鼠标追踪鼠标跟踪
         self.pyqtgraph.setMouseTracking(True)
         self.pyqtgraph.scene().sigMouseMoved.connect(self.mouseMoved)
+
+        self.plotItem = self.pyqtgraph.getPlotItem()
+
+        # 设置x、y坐标轴文字
+        self.plotItem.setLabel(axis='bottom', text=get_x_axis_lable())
+        self.plotItem.setLabel(axis='left', text=get_y_axis_lable())
 
     def changeworkdir(self, path, isdialogflag=False):
         # 设置treeview工作目录，代码顺序不能颠倒
@@ -141,7 +144,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 载入数据，如果数据格式有变化这里会报错
         data = load_data(file)
-        filepath, filename = os.path.split(file)
+        filepath, fullfilename = os.path.split(file)
+        filename, extension = os.path.splitext(fullfilename)
 
         # 获取用来设置x轴坐标轴文字的数据
         x_dict = self.set_axix_x_data(data)
@@ -154,10 +158,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             name=filename,
                             antialias=True)
 
-        self.crosshaircheckboxstateChanged(self.crosshaircheckbox)
-
         # 用数据数组长度来给绘图计数器赋值
         self.plotcount = len(self.axis_y_data_arr)
+
+        # 添加十字丝和网格
+        self.crosshaircheckboxstateChanged(self.crosshaircheckbox)
+        self.showgridcheckboxstateChanged(self.showgridcheckbox)
 
         # 添加图例,仅第二次绘图运行
         if self.plotcount == 2 and self.plotItem.legend is None:
@@ -167,8 +173,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.plotItem.legend.addItem(item=item, name=item.name())
 
         # 在状态栏上显示当前绘图的文件和绘图总数
-        self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) +
-                                   " ，当前绘图总数 "+ str(self.plotcount))
+        self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) + " ，当前绘图总数 " + str(self.plotcount))
 
     # TODO：恢复默认坐标值不生效
     def set_axix_x_data(self, data=None):
@@ -276,20 +281,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.searchdialog.show()
 
     def crosshaircheckboxstateChanged(self, checkbox):
-        # 十字光标相关设置,添加元素到绘图元件中
-        if checkbox.isChecked():
-            self.label = pg.TextItem()  # 创建一个文本项
-            self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
-            self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
-            self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
-            self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
-            self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
-            self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
-        # 如果用户取消了checkbox的状态，那就删除这三个item
-        if not checkbox.isChecked() and self.plotcount >= 1:
-            self.plotItem.removeItem(self.hLine)
-            self.plotItem.removeItem(self.vLine)
-            self.plotItem.removeItem(self.label)
+        # 防止未绘图连续点击两次checkbox程序崩溃
+        if self.plotcount == 0:
+            pass
+        else:
+            # 十字光标相关设置,添加元素到绘图元件中
+            if checkbox.isChecked():
+                self.label = pg.TextItem()  # 创建一个文本项
+                self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
+                self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
+                self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
+                self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
+                self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+                self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
+
+            # 如果用户取消了checkbox的状态，那就删除这三个item
+            # 判断元素是否存在
+            flag = True
+            try:
+                self.label
+            except AttributeError:
+                flag = False
+            if checkbox.isChecked() is False and flag is True:
+                self.plotItem.removeItem(self.hLine)
+                self.plotItem.removeItem(self.vLine)
+                self.plotItem.removeItem(self.label)
 
     def searchdialogitemdoubleclicked(self, event):
         index = event.text()
@@ -350,8 +366,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def generate_mousetracking_label(self, count, index):
         labletext = ""
         for i in range(count):
-            labletext = labletext + "<p style='color:white'><strong>波长：{} 数据：{}</strong></p>"\
-                .format(self.axis_x_dict_arr[i][index], self.axis_y_data_arr[i].iloc[index].values)
+            labletext = labletext + "<p style='color:white'><strong>{}：{} {}：{}</strong></p>"\
+                .format(get_x_axis_lable(), self.axis_x_dict_arr[i][index], get_y_axis_lable(), self.axis_y_data_arr[i].iloc[index].values)
         return labletext
 
     def closeEvent(self, QCloseEvent):

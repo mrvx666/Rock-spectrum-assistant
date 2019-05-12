@@ -10,7 +10,11 @@ ticksspacing = 500
 # 绘图限制，当绘图板上超过这个限制会提示用户清除图形
 plotlimit = 5
 # 网格透明度
-grid_alpha = 0.7
+grid_alpha = 0.5
+# x坐标轴文字
+x_axis_lable = "波长"
+# 轴坐标文字
+y_axis_lable = "反射率"
 # 在线说明网址
 help_documentation_url = "https://docs.qq.com/doc/DWkNmQ3VDZVJuVlVu"
 # 示例数据
@@ -38,6 +42,14 @@ def get_plot_limit():
 
 def get_grid_alpha():
     return grid_alpha
+
+
+def get_x_axis_lable():
+    return x_axis_lable
+
+
+def get_y_axis_lable():
+    return y_axis_lable
 
 
 def get_help_documentation_url():
