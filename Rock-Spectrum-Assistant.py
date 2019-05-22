@@ -12,7 +12,7 @@ import pyqtgraph as pg
 
 from utils import *
 
-color = ('b', 'c', 'g', 'w', 'm', 'r', 'y', 'k')
+color = ('b', 'c', 'g', 'y', 'r', 'm')
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -32,7 +32,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 初始化两个数组，用于向鼠标追踪方法传递数据
         self.axis_y_data_arr = []
         self.axis_x_dict_arr = []
-        self.plotcount = 0
 
         # 判断程序所在目录下data文件夹是否存在
         if os.path.isdir(self.workdir):
@@ -54,17 +53,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 载入UI.py
         self.setupUi(self)
 
-        # 载入子窗体
+        # 关联菜单栏到方法
         self.aboutwin = aboutDialog()
         self.Help.triggered.connect(self.helpmanual)
         self.helpwin = helpdialog()
         self.About.triggered.connect(self.aboutthisprogram)
         self.searchdialog = searchdialog(self.workdir)
         self.notepad = Notepad(self.workdir)
-        self.Notepad.triggered.connect(self.notepadwin)
+        self.Notepad.triggered.connect(lambda: self.addfile(True))
 
-        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
-        self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
 
         # checkbox相关设置
         self.crosshaircheckbox.stateChanged.connect(lambda: self.crosshaircheckboxstateChanged(self.crosshaircheckbox))
@@ -78,6 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pyqtgraph.setMouseTracking(True)
         self.pyqtgraph.scene().sigMouseMoved.connect(self.mouseMoved)
 
+        # 获取绘图板绘图对象
         self.plotItem = self.pyqtgraph.getPlotItem()
 
         # 设置x、y坐标轴文字
@@ -158,17 +156,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             name=filename,
                             antialias=True)
 
-        # 用数据数组长度来给绘图计数器赋值
-        self.plotcount = len(self.axis_y_data_arr)
+        # 用绘图板上的数据数组长度来给绘图计数器赋值
+        DataItem_list = self.plotItem.listDataItems()
+        self.plotcount = len(DataItem_list)
 
-        # 添加十字丝和网格
+        # 根据UI文件默认配置，添加十字丝和网格
         self.crosshaircheckboxstateChanged(self.crosshaircheckbox)
         self.showgridcheckboxstateChanged(self.showgridcheckbox)
 
         # 添加图例,仅第二次绘图运行
         if self.plotcount == 2 and self.plotItem.legend is None:
             self.plotItem.addLegend()
-            DataItem_list = self.plotItem.listDataItems()
             for item in DataItem_list:
                 self.plotItem.legend.addItem(item=item, name=item.name())
 
@@ -188,9 +186,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             stringaxis.setTicks([axis_x_data, x_dict.items()])
             return x_dict
 
-    def addfile(self):
-        self.statusbar.showMessage("RSA:add file")
-        self.notepad.newFile(get_testdata())
+    # 打开记事本与新建文件都是进行同一个操作，合并两个方法
+    def addfile(self, flag=False):
+        self.notepad = Notepad(self.workdir)
+        if flag is True:
+            self.statusbar.showMessage("RSA:start notepad")
+        else:
+            self.statusbar.showMessage("RSA:add file")
+            self.notepad.newFile(get_testdata())
         self.notepad.show()
 
     def editfile(self):
@@ -276,10 +279,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
         return path
 
-    @pyqtSlot()
-    def on_searchbutton_clicked(self):
-        self.searchdialog.show()
-
     def crosshaircheckboxstateChanged(self, checkbox):
         # 防止未绘图连续点击两次checkbox程序崩溃
         if self.plotcount == 0:
@@ -287,8 +286,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             # 十字光标相关设置,添加元素到绘图元件中
             if checkbox.isChecked():
-                self.label = pg.TextItem()  # 创建一个文本项
-                self.plotItem.addItem(self.label)  # 在图形部件中添加文本项
+                self.mouseTrackingLabel = pg.TextItem()  # 创建一个文本项
+                self.plotItem.addItem(self.mouseTrackingLabel)  # 在图形部件中添加文本项
                 self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
                 self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
                 self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
@@ -296,16 +295,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
 
             # 如果用户取消了checkbox的状态，那就删除这三个item
-            # 判断元素是否存在
+            # 判断元素是否存在，因为三个元素是统一添加、统一删除的，判断一个元素是不是存在就行
             flag = True
             try:
-                self.label
+                self.mouseTrackingLabel
             except AttributeError:
                 flag = False
             if checkbox.isChecked() is False and flag is True:
                 self.plotItem.removeItem(self.hLine)
                 self.plotItem.removeItem(self.vLine)
-                self.plotItem.removeItem(self.label)
+                self.plotItem.removeItem(self.mouseTrackingLabel)
+
+    @pyqtSlot()
+    def on_searchbutton_clicked(self):
+        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
+        self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
+        self.searchdialog = searchdialog(self.workdir)
+        self.searchdialog.show()
 
     def searchdialogitemdoubleclicked(self, event):
         index = event.text()
@@ -326,10 +332,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def helpmanual(self):
         self.statusbar.showMessage("RSA:start help manual")
         self.helpwin.show()
-
-    def notepadwin(self):
-        self.statusbar.showMessage("RSA:start notepad")
-        self.notepad.show()
 
     def showgridcheckboxstateChanged(self, checkbox):
         if checkbox.checkState():
@@ -354,8 +356,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         # TODO:如果多次载入数据长度不一样，这里可能会引发错误
                         if -1 < index < len(self.axis_y_data_arr[0].index):
                             # 在label中写入HTML
-                            self.label.setHtml(self.generate_mousetracking_label(self.plotcount, index))
-                            self.label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                            self.mouseTrackingLabel.setHtml(self.generate_mousetracking_label(self.plotcount, index))
+                            self.mouseTrackingLabel.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.vLine.setPos(mousePoint.x())
                         self.hLine.setPos(mousePoint.y())
