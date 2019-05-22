@@ -12,15 +12,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_findpeaksdialog(object):
     def setupUi(self, findpeaksdialog):
         findpeaksdialog.setObjectName("findpeaksdialog")
-        findpeaksdialog.resize(445, 133)
+        findpeaksdialog.resize(440, 125)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/image/image/JLUgeo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         findpeaksdialog.setWindowIcon(icon)
-        self.buttonBox = QtWidgets.QDialogButtonBox(findpeaksdialog)
-        self.buttonBox.setGeometry(QtCore.QRect(350, 20, 81, 241))
-        self.buttonBox.setOrientation(QtCore.Qt.Vertical)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
         self.verticalLayoutWidget = QtWidgets.QWidget(findpeaksdialog)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 20, 331, 91))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
@@ -92,10 +87,23 @@ class Ui_findpeaksdialog(object):
         self.verticalLayout_7.addWidget(self.parameter4doubleSpinBox)
         self.horizontalLayout.addLayout(self.verticalLayout_7)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.verticalLayoutWidget_2 = QtWidgets.QWidget(findpeaksdialog)
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(350, 20, 81, 91))
+        self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.plotbutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
+        self.plotbutton.setObjectName("plotbutton")
+        self.verticalLayout_3.addWidget(self.plotbutton)
+        self.helpbutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
+        self.helpbutton.setObjectName("helpbutton")
+        self.verticalLayout_3.addWidget(self.helpbutton)
+        self.closebutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
+        self.closebutton.setObjectName("closebutton")
+        self.verticalLayout_3.addWidget(self.closebutton)
 
         self.retranslateUi(findpeaksdialog)
-        self.buttonBox.accepted.connect(findpeaksdialog.accept)
-        self.buttonBox.rejected.connect(findpeaksdialog.reject)
         QtCore.QMetaObject.connectSlotsByName(findpeaksdialog)
 
     def retranslateUi(self, findpeaksdialog):
@@ -108,6 +116,9 @@ class Ui_findpeaksdialog(object):
         self.parameter2label.setText(_translate("findpeaksdialog", "parameter2"))
         self.parameter3label.setText(_translate("findpeaksdialog", "parameter3"))
         self.parameter4label.setText(_translate("findpeaksdialog", "parameter4"))
+        self.plotbutton.setText(_translate("findpeaksdialog", "plot"))
+        self.helpbutton.setText(_translate("findpeaksdialog", "help"))
+        self.closebutton.setText(_translate("findpeaksdialog", "close"))
 
 
 import apprcc_rc

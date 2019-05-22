@@ -61,7 +61,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.searchdialog = searchdialog(self.workdir)
         self.notepad = Notepad(self.workdir)
         self.Notepad.triggered.connect(lambda: self.addfile(True))
-        self.Findpeaks.triggered.connect(self.findpeakswin)
+        self.findpeakswin = findpeaksdialog()
+        self.Findpeaks.triggered.connect(self.findpeaks)
 
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
         self.searchdialog = searchdialog(self.workdir)
@@ -350,12 +351,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("RSA:start help manual")
         self.helpwin.show()
 
-    def findpeakswin(self):
+    def findpeaks(self):
         # 检查绘图板上是否存在图形
-        if self.plotcount == 0:
-            self.statusbar.showMessage("RSA:plotcount is {},find peaks will not run".format(self.plotcount))
-        else:
+        if self.plotcount == 1:
             self.statusbar.showMessage("RSA:start find peaks")
+            self.findpeakswin.show()
+        else:
+            self.statusbar.showMessage("RSA:plotcount is {},find peaks will not run".format(self.plotcount))
+            QMessageBox.information(self, "提示", "findpeas仅能在绘图板上有一个图形时运行\n当前绘图数为{}".format(self.plotcount),
+                                    QMessageBox.Close,QMessageBox.Close)
 
     def showgridcheckboxstateChanged(self, checkbox):
         if checkbox.checkState():

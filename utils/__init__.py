@@ -1,5 +1,6 @@
 from utils.RSA_UI.RSA_ui import Ui_MainWindow
 from utils.aboutdialog.callaboutdialog import aboutDialog
+from utils.findpeaks.callfindpeaksdialog import findpeaksdialog
 from utils.searchdialog.callsearchdialog import searchdialog
 from utils.helpdialog.callhelpdialog import helpdialog
 from utils.loaddata import load_data

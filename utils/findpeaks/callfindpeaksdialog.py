@@ -1,17 +1,21 @@
 from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import pyqtSlot, QUrl
+from PyQt5.QtGui import QDesktopServices
 from utils.findpeaks.findpeaksdialog import Ui_findpeaksdialog
 import numpy as np
 from math import sqrt
+
+findpeaks_repo_url = "https://github.com/MonsieurV/py-findpeaks#Overview"
 
 parameters_detect_peaks = {"Minimum distance": None, "Minimum height": 1, "Relative threshold": 0}
 parameters_Janko_Slavic_findpeaks = {"spacing": None, "limit": 7}
 parameters_tony_beltramelli_detect_peaks = {"Amplitude": None, "threshold": 0.5}
 
 
-class findpeaks(QDialog, Ui_findpeaksdialog):
+class findpeaksdialog(QDialog, Ui_findpeaksdialog):
 
     def __init__(self, *args, **kwargs):
-        super(findpeaks, self).__init__(*args, **kwargs)
+        super(findpeaksdialog, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.comboBox.currentIndexChanged.connect(self.selectionchange)
         # 初始化默认选择的项目参数
@@ -27,6 +31,7 @@ class findpeaks(QDialog, Ui_findpeaksdialog):
             self.set_parameters(parameters_tony_beltramelli_detect_peaks)
 
     def set_parameters(self, parameters):
+        # 获取标签和数字框数组方便后期调整
         parameters_lable_list = [self.parameter1label,
                                  self.parameter2label,
                                  self.parameter3label,
@@ -35,17 +40,40 @@ class findpeaks(QDialog, Ui_findpeaksdialog):
                                 self.parameter2doubleSpinBox,
                                 self.parameter3doubleSpinBox,
                                 self.parameter4doubleSpinBox]
-        i = 0  # 填入默认参数
+
+        # 重置所有选项到可用状态
+        for i in range(0, len(parameters_lable_list), 1):
+            parameters_lable_list[i].setEnabled(True)
+            parameters_values_list[i].setEnabled(True)
+
+        # 填入参数
+        i = 0
         for parameter_name, parameter_value in parameters.items():
             parameters_lable_list[i].setText(parameter_name)
+            # 如果原始方法中对函数的初始值定义为None，则跳过
             if parameter_value is not None:
                 parameters_values_list[i].setValue(parameter_value)
             i += 1
 
+        # 使超出方法所需要的参数选项框关闭
         if i <= len(parameters_lable_list):
-            for i in range(i, len(parameters_lable_list),1):
+            for i in range(i, len(parameters_lable_list), 1):
+                parameters_lable_list[i].setText("Parameter{}".format(i+1))
                 parameters_lable_list[i].setEnabled(False)
+                parameters_values_list[i].setValue(0.00)
                 parameters_values_list[i].setEnabled(False)
+
+    @pyqtSlot()
+    def on_plotbutton_clicked(self):
+        pass
+
+    @pyqtSlot()
+    def on_helpbutton_clicked(self):
+        QDesktopServices.openUrl(QUrl(findpeaks_repo_url))
+
+    @pyqtSlot()
+    def on_closebutton_clicked(self):
+        self.close()
 
     def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising',
                      kpsh=False, valley=False):
@@ -200,6 +228,6 @@ if __name__ == '__main__':
     import sys
     from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
-    w = findpeaks()
+    w = findpeaksdialog()
     w.show()
     sys.exit(app.exec_())
