@@ -108,6 +108,9 @@ class Ui_MainWindow(object):
         self.Help.setObjectName("Help")
         self.Notepad = QtWidgets.QAction(MainWindow)
         self.Notepad.setObjectName("Notepad")
+        self.Findpeaks = QtWidgets.QAction(MainWindow)
+        self.Findpeaks.setObjectName("Findpeaks")
+        self.menuSetting.addAction(self.Findpeaks)
         self.menuSetting.addAction(self.Notepad)
         self.menuSetting.addSeparator()
         self.menuSetting.addAction(self.Help)
@@ -133,6 +136,7 @@ class Ui_MainWindow(object):
         self.About.setText(_translate("MainWindow", "About"))
         self.Help.setText(_translate("MainWindow", "Help"))
         self.Notepad.setText(_translate("MainWindow", "Notepad"))
+        self.Findpeaks.setText(_translate("MainWindow", "Findpeaks"))
 
 
 from pyqtgraph import PlotWidget

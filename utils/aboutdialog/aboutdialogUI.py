@@ -78,7 +78,7 @@ class Ui_aboutDialog(object):
 
     def retranslateUi(self, aboutDialog):
         _translate = QtCore.QCoreApplication.translate
-        aboutDialog.setWindowTitle(_translate("aboutDialog", "关于"))
+        aboutDialog.setWindowTitle(_translate("aboutDialog", "RSA:About this program"))
         self.closeButton.setText(_translate("aboutDialog", "好的"))
         self.textlabel.setText(_translate("aboutDialog", "本程序由吉林大学地球科学学院开发"))
         self.addresslabel.setText(_translate("aboutDialog", "地址: 吉林省长春市建设街2199号   邮编:130061  电话:0431-88502278  传真:0431-88502055"))

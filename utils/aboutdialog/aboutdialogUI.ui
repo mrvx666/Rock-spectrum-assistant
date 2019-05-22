@@ -28,7 +28,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>关于</string>
+   <string>RSA:About this program</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../apprcc.qrc">

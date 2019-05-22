@@ -3,7 +3,7 @@ from PyQt5.QtCore import pyqtSlot
 import os
 import sys
 
-from utils.searchdialog.searchdialogUI import Ui_searchdialog
+from utils.searchdialog.searchdialog import Ui_searchdialog
 from utils.config import get_default_data_file_extension
 
 Test_workdir = ".." + os.sep + ".." + os.sep + "data"

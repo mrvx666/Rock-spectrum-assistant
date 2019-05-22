@@ -186,6 +186,7 @@
     <property name="title">
      <string>Modules</string>
     </property>
+    <addaction name="Findpeaks"/>
     <addaction name="Notepad"/>
     <addaction name="separator"/>
     <addaction name="Help"/>
@@ -211,6 +212,11 @@
   <action name="Notepad">
    <property name="text">
     <string>Notepad</string>
+   </property>
+  </action>
+  <action name="Findpeaks">
+   <property name="text">
+    <string>Findpeaks</string>
    </property>
   </action>
  </widget>

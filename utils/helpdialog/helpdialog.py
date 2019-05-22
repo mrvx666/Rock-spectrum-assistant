@@ -12,11 +12,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_helpDialog(object):
     def setupUi(self, helpDialog):
         helpDialog.setObjectName("helpDialog")
-        helpDialog.resize(574, 396)
-        helpDialog.setMinimumSize(QtCore.QSize(574, 396))
-        helpDialog.setMaximumSize(QtCore.QSize(574, 396))
+        helpDialog.resize(568, 390)
+        helpDialog.setMinimumSize(QtCore.QSize(568, 390))
+        helpDialog.setMaximumSize(QtCore.QSize(568, 390))
         self.verticalLayoutWidget = QtWidgets.QWidget(helpDialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(290, 10, 271, 371))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(290, 10, 272, 371))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -72,7 +72,7 @@ class Ui_helpDialog(object):
 
     def retranslateUi(self, helpDialog):
         _translate = QtCore.QCoreApplication.translate
-        helpDialog.setWindowTitle(_translate("helpDialog", "RSA：帮助手册"))
+        helpDialog.setWindowTitle(_translate("helpDialog", "RSA：Help manual"))
         self.textlabel.setText(_translate("helpDialog", "需要帮助？\n"
 "扫描二维码或点击按钮，打开RSA说明书"))
         self.open_help_documentation_url_Button.setText(_translate("helpDialog", "打开说明书（浏览器）"))
