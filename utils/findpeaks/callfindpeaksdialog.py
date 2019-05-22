@@ -5,7 +5,9 @@ from utils.findpeaks.findpeaksdialog import Ui_findpeaksdialog
 import numpy as np
 from math import sqrt
 
-findpeaks_repo_url = "https://github.com/MonsieurV/py-findpeaks#Overview"
+detect_peaks_help_url = "https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/DetectPeaks.ipynb"
+Janko_Slavic_findpeaks_help_url = "https://github.com/jankoslavic/py-tools/blob/master/findpeaks/Findpeaks%20example.ipynb"
+tony_beltramelli_detect_peaks_help_url = "https://github.com/MonsieurV/py-findpeaks/blob/master/tests/libs/tony_beltramelli_detect_peaks.py"
 
 parameters_detect_peaks = {"Minimum distance": None, "Minimum height": 1, "Relative threshold": 0}
 parameters_Janko_Slavic_findpeaks = {"spacing": None, "limit": 7}
@@ -18,6 +20,16 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
         super(findpeaksdialog, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.comboBox.currentIndexChanged.connect(self.selectionchange)
+
+        # 获取标签和数字框数组方便后期调整
+        self.parameters_lable_list = [self.parameter1label,
+                                 self.parameter2label,
+                                 self.parameter3label,
+                                 self.parameter4label]
+        self.parameters_values_list = [self.parameter1doubleSpinBox,
+                                  self.parameter2doubleSpinBox,
+                                  self.parameter3doubleSpinBox,
+                                  self.parameter4doubleSpinBox]
         # 初始化默认选择的项目参数
         self.selectionchange()
 
@@ -31,45 +43,51 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
             self.set_parameters(parameters_tony_beltramelli_detect_peaks)
 
     def set_parameters(self, parameters):
-        # 获取标签和数字框数组方便后期调整
-        parameters_lable_list = [self.parameter1label,
-                                 self.parameter2label,
-                                 self.parameter3label,
-                                 self.parameter4label]
-        parameters_values_list = [self.parameter1doubleSpinBox,
-                                self.parameter2doubleSpinBox,
-                                self.parameter3doubleSpinBox,
-                                self.parameter4doubleSpinBox]
 
         # 重置所有选项到可用状态
-        for i in range(0, len(parameters_lable_list), 1):
-            parameters_lable_list[i].setEnabled(True)
-            parameters_values_list[i].setEnabled(True)
+        for i in range(0, len(self.parameters_lable_list), 1):
+            self.parameters_lable_list[i].setEnabled(True)
+            self.parameters_values_list[i].setEnabled(True)
 
         # 填入参数
         i = 0
         for parameter_name, parameter_value in parameters.items():
-            parameters_lable_list[i].setText(parameter_name)
+            self.parameters_lable_list[i].setText(parameter_name)
             # 如果原始方法中对函数的初始值定义为None，则跳过
             if parameter_value is not None:
-                parameters_values_list[i].setValue(parameter_value)
+                self.parameters_values_list[i].setValue(parameter_value)
             i += 1
 
         # 使超出方法所需要的参数选项框关闭
-        if i <= len(parameters_lable_list):
-            for i in range(i, len(parameters_lable_list), 1):
-                parameters_lable_list[i].setText("Parameter{}".format(i+1))
-                parameters_lable_list[i].setEnabled(False)
-                parameters_values_list[i].setValue(0.00)
-                parameters_values_list[i].setEnabled(False)
+        if i <= len(self.parameters_lable_list):
+            for i in range(i, len(self.parameters_lable_list), 1):
+                self.parameters_lable_list[i].setText("Parameter{}".format(i+1))
+                self.parameters_lable_list[i].setEnabled(False)
+                self.parameters_values_list[i].setValue(0.00)
+                self.parameters_values_list[i].setEnabled(False)
 
-    @pyqtSlot()
-    def on_plotbutton_clicked(self):
-        pass
+    def get_parameters(self):
+        parameters_lable_list_text = []
+        for lable in self.parameters_lable_list:
+            parameters_lable_list_text.append(lable.text())
+        parameters_values_list_values = []
+        for value in self.parameters_values_list:
+            if value.value() is None:
+                parameters_values_list_values.append(None)
+            else:
+                parameters_values_list_values.append(value.value())
+        data = dict(map(lambda x,y:[x,y], parameters_lable_list_text, parameters_values_list_values))
+        return data
 
     @pyqtSlot()
     def on_helpbutton_clicked(self):
-        QDesktopServices.openUrl(QUrl(findpeaks_repo_url))
+        current_selection = self.comboBox.currentText()
+        if current_selection == "detect_peaks":
+            QDesktopServices.openUrl(QUrl(detect_peaks_help_url))
+        if current_selection == "Janko_Slavic_findpeaks":
+            QDesktopServices.openUrl(QUrl(Janko_Slavic_findpeaks_help_url))
+        if current_selection == "tony_beltramelli_detect_peaks":
+            QDesktopServices.openUrl(QUrl(tony_beltramelli_detect_peaks_help_url))
 
     @pyqtSlot()
     def on_closebutton_clicked(self):
@@ -223,6 +241,7 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
             if peaks[i]:
                 peak_indexes.append(i)
         return peak_indexes
+
 
 if __name__ == '__main__':
     import sys

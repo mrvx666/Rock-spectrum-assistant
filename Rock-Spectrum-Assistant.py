@@ -58,14 +58,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Help.triggered.connect(self.helpmanual)
         self.helpwin = helpdialog()
         self.About.triggered.connect(self.aboutthisprogram)
-        self.searchdialog = searchdialog(self.workdir)
         self.notepad = Notepad(self.workdir)
         self.Notepad.triggered.connect(lambda: self.addfile(True))
-        self.findpeakswin = findpeaksdialog()
-        self.Findpeaks.triggered.connect(self.findpeaks)
 
-        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
+        self.findpeaksdialog = findpeaksdialog()
+        self.Findpeaks.triggered.connect(self.findpeaks)
+        # 把子窗体plot按钮点击交给RSA主窗体处理
+        self.findpeaksdialog.plotbutton.clicked.connect(self.findpeaksplot)
+
         self.searchdialog = searchdialog(self.workdir)
+        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
         self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
 
         # checkbox相关设置
@@ -300,35 +302,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFIL E'] + os.path.sep + 'desktop')
         return path
 
-    def crosshaircheckboxstateChanged(self, checkbox):
-        # 防止未绘图连续点击两次checkbox程序崩溃
-        if self.plotcount == 0:
-            pass
-        else:
-            # 十字光标相关设置,添加元素到绘图元件中
-            if checkbox.isChecked():
-                self.mouseTrackingLabel = pg.TextItem()  # 创建一个文本项
-                self.plotItem.addItem(self.mouseTrackingLabel)  # 在图形部件中添加文本项
-                self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
-                self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
-                self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
-                self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
-                self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
-
-            # 如果用户取消了checkbox的状态，那就删除这三个item
-            # 判断元素是否存在，因为三个元素是统一添加、统一删除的，判断一个元素是不是存在就行
-            flag = True
-            try:
-                self.mouseTrackingLabel
-            except AttributeError:
-                flag = False
-            if checkbox.isChecked() is False and flag is True:
-                self.plotItem.removeItem(self.hLine)
-                self.plotItem.removeItem(self.vLine)
-                self.plotItem.removeItem(self.mouseTrackingLabel)
-
     @pyqtSlot()
     def on_searchbutton_clicked(self):
+        self.statusbar.showMessage("RSA:search dir is " + self.workdir)
         self.searchdialog.show()
 
     def searchdialogitemdoubleclicked(self, event):
@@ -355,11 +331,45 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 检查绘图板上是否存在图形
         if self.plotcount == 1:
             self.statusbar.showMessage("RSA:start find peaks")
-            self.findpeakswin.show()
+            self.findpeaksdialog.show()
         else:
             self.statusbar.showMessage("RSA:plotcount is {},find peaks will not run".format(self.plotcount))
             QMessageBox.information(self, "提示", "findpeas仅能在绘图板上有一个图形时运行\n当前绘图数为{}".format(self.plotcount),
                                     QMessageBox.Close,QMessageBox.Close)
+
+    def findpeaksplot(self):
+        data = self.findpeaksdialog.get_parameters()
+        print(type(data))
+        for k,v in data.items():
+            print(k)
+            print(v)
+
+    def crosshaircheckboxstateChanged(self, checkbox):
+        # 防止未绘图连续点击两次checkbox程序崩溃
+        if self.plotcount == 0:
+            pass
+        else:
+            # 十字光标相关设置,添加元素到绘图元件中
+            if checkbox.isChecked():
+                self.mouseTrackingLabel = pg.TextItem()  # 创建一个文本项
+                self.plotItem.addItem(self.mouseTrackingLabel)  # 在图形部件中添加文本项
+                self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
+                self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
+                self.plotItem.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
+                self.plotItem.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+                self.showgridcheckboxstateChanged(self.showgridcheckbox)  # 显示网格
+
+            # 如果用户取消了checkbox的状态，那就删除这三个item
+            # 判断元素是否存在，因为三个元素是统一添加、统一删除的，判断一个元素是不是存在就行
+            flag = True
+            try:
+                self.mouseTrackingLabel
+            except AttributeError:
+                flag = False
+            if checkbox.isChecked() is False and flag is True:
+                self.plotItem.removeItem(self.hLine)
+                self.plotItem.removeItem(self.vLine)
+                self.plotItem.removeItem(self.mouseTrackingLabel)
 
     def showgridcheckboxstateChanged(self, checkbox):
         if checkbox.checkState():
@@ -408,6 +418,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.aboutwin.close()
             self.helpwin.close()
             self.searchdialog.close()
+            self.findpeaksdialog.close()
             self.notepad.close()
         if reply == QMessageBox.Cancel:
             QCloseEvent.ignore()
