@@ -62,6 +62,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.notepad = Notepad(self.workdir)
         self.Notepad.triggered.connect(lambda: self.addfile(True))
 
+        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
+        self.searchdialog = searchdialog(self.workdir)
+        self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
 
         # checkbox相关设置
         self.crosshaircheckbox.stateChanged.connect(lambda: self.crosshaircheckboxstateChanged(self.crosshaircheckbox))
@@ -109,6 +112,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         editfile.triggered.connect(self.editfile)
         removefile = menu.addAction("remove")
         removefile.triggered.connect(self.removefile)
+        opendirectory = menu.addAction("open directory")
+        opendirectory.triggered.connect(self.opendirectory)
 
         cursor = QCursor()
         menu.exec_(cursor.pos())
@@ -138,7 +143,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 选取画笔颜色，防止溢出
         colorindex = self.plotcount
         if self.plotcount > len(color) - 1:
-            colorindex = self.plotcount % len(color) - 1
+            colorindex = self.plotcount % len(color)
 
         # 载入数据，如果数据格式有变化这里会报错
         data = load_data(file)
@@ -146,7 +151,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         filename, extension = os.path.splitext(fullfilename)
 
         # 获取用来设置x轴坐标轴文字的数据
-        x_dict = self.set_axix_x_data(data)
+        x_dict = self.get_axix_x_data(data)
 
         # 将数据保存到数组用于鼠标追踪调用
         self.axis_y_data_arr.append(data)
@@ -171,14 +176,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.plotItem.legend.addItem(item=item, name=item.name())
 
         # 在状态栏上显示当前绘图的文件和绘图总数
-        self.statusbar.showMessage("RSA:plot " + file.lstrip(self.workdir) + " ，当前绘图总数 " + str(self.plotcount))
+        self.statusbar.showMessage("RSA:plot \\" + file.lstrip(self.workdir) + " ，当前绘图总数 " + str(self.plotcount))
 
     # TODO：恢复默认坐标值不生效
-    def set_axix_x_data(self, data=None):
+    def get_axix_x_data(self, data=None):
         stringaxis = self.plotItem.getAxis(name='bottom')
         # 如果没有数据传入，坐标值设为默认值
         if data is None:
-            stringaxis.setTickSpacing(300, 100)
+            stringaxis.setTickSpacing()
         else:
             # 将数据表索引（波长）转换为绘图时的坐标轴数据
             x_dict = dict(enumerate(data.index))
@@ -188,7 +193,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # 打开记事本与新建文件都是进行同一个操作，合并两个方法
     def addfile(self, flag=False):
-        self.notepad = Notepad(self.workdir)
         if flag is True:
             self.statusbar.showMessage("RSA:start notepad")
         else:
@@ -209,7 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self, "温馨提示", "文件拓展名与数据库默认拓展名不相符", QMessageBox.Close, QMessageBox.Close)
 
     def edit(self, file):
-        self.statusbar.showMessage("RSA:edit " + file.lstrip(self.workdir))
+        self.statusbar.showMessage("RSA:edit \\" + file.lstrip(self.workdir))
         self.notepad.openFileEvent(file)
         self.notepad.show()
 
@@ -224,9 +228,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if reply == QMessageBox.Yes:
                 # 用户点击Yes，删除文件
                 os.remove(self.mouseindex)
-                self.statusbar.showMessage("RSA:remove " + self.mouseindex.lstrip(self.workdir))
+                self.statusbar.showMessage("RSA:remove \\" + self.mouseindex.lstrip(self.workdir))
             if reply == QMessageBox.Cancel:
                 pass
+
+    def opendirectory(self):
+        # 防止用户点到空白目录无响应
+        if self.mouseindex == "":
+            path = self.workdir
+        else:
+            path = self.mouseindex
+
+        if os.path.isdir(path):
+            self.statusbar.showMessage("RSA:open directory \\" + path.lstrip(self.workdir))
+            os.startfile(path)
+        elif os.path.isfile(path):
+            filedirname = os.path.dirname(path)
+            self.statusbar.showMessage("RSA:open file directory \\" + filedirname.lstrip(self.workdir))
+            os.startfile(filedirname)
 
     @pyqtSlot()
     def on_clearbutton_clicked(self):
@@ -241,7 +260,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.axis_x_dict_arr.clear()
         self.pyqtgraph.clear()
         self.plotcount = len(self.axis_y_data_arr)
-        self.statusbar.showMessage("RSA:reset")
+        self.statusbar.showMessage("RSA:reset plot board")
 
     @pyqtSlot()
     def on_browsebutton_clicked(self, path=None, isdialogflag=False):
@@ -257,7 +276,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.lineEdit.setText(path)
             # 重设记事本模块工作目录
             self.notepad.changeworkdir(self.workdir)
-            self.statusbar.showMessage("RSA:change work dir to " + path)
+            self.statusbar.showMessage("RSA:change work dir to \\" + path)
 
     def set_work_dir(self, firstworkdirflag=False):
         if firstworkdirflag is True:
@@ -276,7 +295,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_path_from_user(self):
         filedialog = QFileDialog()
         filedialog.setViewMode(QFileDialog.Detail)
-        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFILE'] + os.path.sep + 'desktop')
+        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFIL E'] + os.path.sep + 'desktop')
         return path
 
     def crosshaircheckboxstateChanged(self, checkbox):
@@ -308,9 +327,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def on_searchbutton_clicked(self):
-        # 把搜索子窗体双击事件连接到RSA主窗体进行处理
-        self.searchdialog.listWidget.itemDoubleClicked.connect(self.searchdialogitemdoubleclicked)
-        self.searchdialog = searchdialog(self.workdir)
         self.searchdialog.show()
 
     def searchdialogitemdoubleclicked(self, event):
@@ -338,7 +354,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.plotItem.showGrid(x=True, y=True, alpha=get_grid_alpha())
         else:
             self.plotItem.showGrid(x=False, y=False)
-            self.set_axix_x_data()
 
     def mouseMoved(self, event):
         # 必须勾选crosshair的checkbox且绘图板上有图形才会进行鼠标追踪
