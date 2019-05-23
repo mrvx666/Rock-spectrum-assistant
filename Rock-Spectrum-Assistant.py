@@ -302,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_path_from_user(self):
         filedialog = QFileDialog()
         filedialog.setViewMode(QFileDialog.Detail)
-        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['USERPROFIL E'] + os.path.sep + 'desktop')
+        path = QFileDialog.getExistingDirectory(self, '请选择数据文件夹', os.environ['userprofile'] + os.path.sep + 'desktop')
         return path
 
     @pyqtSlot()
