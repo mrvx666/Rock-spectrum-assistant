@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_findpeaksdialog(object):
     def setupUi(self, findpeaksdialog):
         findpeaksdialog.setObjectName("findpeaksdialog")
-        findpeaksdialog.resize(440, 125)
+        findpeaksdialog.resize(440, 248)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/image/image/JLUgeo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         findpeaksdialog.setWindowIcon(icon)
@@ -88,7 +88,7 @@ class Ui_findpeaksdialog(object):
         self.horizontalLayout.addLayout(self.verticalLayout_7)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(findpeaksdialog)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(350, 20, 81, 91))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(350, 30, 81, 111))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -102,6 +102,23 @@ class Ui_findpeaksdialog(object):
         self.clearbutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
         self.clearbutton.setObjectName("clearbutton")
         self.verticalLayout_3.addWidget(self.clearbutton)
+        self.horizontalLayoutWidget = QtWidgets.QWidget(findpeaksdialog)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 120, 331, 21))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.peakmarkcheckbox = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
+        self.peakmarkcheckbox.setChecked(True)
+        self.peakmarkcheckbox.setObjectName("peakmarkcheckbox")
+        self.horizontalLayout_2.addWidget(self.peakmarkcheckbox)
+        self.peaktextchebox = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
+        self.peaktextchebox.setObjectName("peaktextchebox")
+        self.horizontalLayout_2.addWidget(self.peaktextchebox)
+        self.textEdit = QtWidgets.QTextEdit(findpeaksdialog)
+        self.textEdit.setEnabled(False)
+        self.textEdit.setGeometry(QtCore.QRect(10, 150, 421, 81))
+        self.textEdit.setObjectName("textEdit")
 
         self.retranslateUi(findpeaksdialog)
         QtCore.QMetaObject.connectSlotsByName(findpeaksdialog)
@@ -119,6 +136,15 @@ class Ui_findpeaksdialog(object):
         self.plotbutton.setText(_translate("findpeaksdialog", "plot"))
         self.helpbutton.setText(_translate("findpeaksdialog", "help"))
         self.clearbutton.setText(_translate("findpeaksdialog", "clear"))
+        self.peakmarkcheckbox.setText(_translate("findpeaksdialog", "peak mark"))
+        self.peaktextchebox.setText(_translate("findpeaksdialog", "peak text"))
+        self.textEdit.setHtml(_translate("findpeaksdialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;\"><br /></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">peaks index and peaks vules will show here. </span></p></body></html>"))
 
 
 import apprcc_rc

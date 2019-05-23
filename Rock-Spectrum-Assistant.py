@@ -65,7 +65,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Findpeaks.triggered.connect(self.findpeakswin)
         # 把子窗体plot、clear按钮点击交给RSA主窗体处理
         self.findpeaksdialog.plotbutton.clicked.connect(self.findpeaksplot)
-        self.findpeaksdialog.clearbutton.clicked.connect(self.clearpeaks)
+        self.findpeaksdialog.clearbutton.clicked.connect(self.clearpeaksmark)
 
         self.searchdialog = searchdialog(self.workdir)
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
@@ -154,6 +154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         data = load_data(file)
         filepath, fullfilename = os.path.split(file)
         filename, extension = os.path.splitext(fullfilename)
+        # 记录数据给findpeaks使用
         self.lastplotdata = data
 
         # 获取用来设置x轴坐标轴文字的数据
@@ -182,7 +183,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.plotItem.legend.addItem(item=item, name=item.name())
 
         # 在状态栏上显示当前绘图的文件和绘图总数
-        self.statusbar.showMessage("RSA:plot \\" + file.lstrip(self.workdir) + " ，当前绘图总数 " + str(self.plotcount))
+        self.statusbar.showMessage("RSA:plot /" + file.lstrip(self.workdir) + " ，当前绘图总数 " + str(self.plotcount))
 
     # TODO：恢复默认坐标值不生效
     def get_axix_x_data(self, data=None):
@@ -196,23 +197,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             axis_x_data = [(i, list(data.index)[i]) for i in range(0, len(data.index), get_ticks_spacing())]
             stringaxis.setTicks([axis_x_data, x_dict.items()])
             return x_dict
-
-    def findpeaksplot(self):
-        data = self.lastplotdata.iloc[:, 0].values
-        peaks = self.findpeaksdialog.find_peaks(data)
-        self.findpeaksdialog.peakslist = []
-        for peak in peaks:
-            arrow = pg.ArrowItem(pos=(peak, data[peak]), angle=-90)
-            text = pg.TextItem("peak")
-            text.setPos(peak, data[peak])
-            self.plotItem.addItem(arrow)
-            self.plotItem.addItem(text)
-            self.findpeaksdialog.peakslist.append((arrow, text))
-
-    def clearpeaks(self):
-        for peak in self.findpeaksdialog.peakslist:
-            self.plotItem.removeItem(peak[0])
-            self.plotItem.removeItem(peak[1])
 
     # 打开记事本与新建文件都是进行同一个操作，合并两个方法
     def addfile(self, flag=False):
@@ -236,7 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self, "温馨提示", "文件拓展名与数据库默认拓展名不相符", QMessageBox.Close, QMessageBox.Close)
 
     def edit(self, file):
-        self.statusbar.showMessage("RSA:edit \\" + file.lstrip(self.workdir))
+        self.statusbar.showMessage("RSA:edit /" + file.lstrip(self.workdir))
         self.notepad.openFileEvent(file)
         self.notepad.show()
 
@@ -251,7 +235,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if reply == QMessageBox.Yes:
                 # 用户点击Yes，删除文件
                 os.remove(self.mouseindex)
-                self.statusbar.showMessage("RSA:remove \\" + self.mouseindex.lstrip(self.workdir))
+                self.statusbar.showMessage("RSA:remove /" + self.mouseindex.lstrip(self.workdir))
             if reply == QMessageBox.Cancel:
                 pass
 
@@ -262,13 +246,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             path = self.mouseindex
         # 判断指针点击的是文件还是目录并打开
-        if os.path.isdir(path):
-            self.statusbar.showMessage("RSA:open directory \\" + path.lstrip(self.workdir))
-            os.startfile(path)
-        elif os.path.isfile(path):
-            filedirname = os.path.dirname(path)
-            self.statusbar.showMessage("RSA:open file directory \\" + filedirname.lstrip(self.workdir))
-            os.startfile(filedirname)
+        if os.path.isfile(path):
+            path = os.path.dirname(path)
+        self.statusbar.showMessage("RSA:open directory /" + path.lstrip(self.workdir))
+        os.startfile(path)
 
     @pyqtSlot()
     def on_clearbutton_clicked(self):
@@ -279,6 +260,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             DataItems_list = self.plotItem.listDataItems()
             for item in DataItems_list:
                 self.plotItem.legend.removeItem(name=item.name())
+        if self.findpeaksdialog.findpeaksplotflag is True:
+            self.clearpeaksmark()
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
         self.pyqtgraph.clear()
@@ -299,7 +282,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.lineEdit.setText(path)
             # 重设记事本模块工作目录
             self.notepad.changeworkdir(self.workdir)
-            self.statusbar.showMessage("RSA:change work dir to \\" + path)
+            self.statusbar.showMessage("RSA:change work dir to /" + path)
 
     def set_work_dir(self, firstworkdirflag=False):
         if firstworkdirflag is True:
@@ -349,12 +332,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def findpeakswin(self):
         # 检查绘图板上是否存在图形
         if self.plotcount == 1:
-            self.statusbar.showMessage("RSA:start find peaks")
+            self.statusbar.showMessage("RSA:start find peaks /" + self.mouseindex.lstrip(self.workdir))
             self.findpeaksdialog.show()
         else:
             self.statusbar.showMessage("RSA:plotcount is {},find peaks will not run".format(self.plotcount))
             QMessageBox.information(self, "提示", "findpeas仅能在绘图板上有一个图形时运行\n当前绘图数为{}".format(self.plotcount),
-                                    QMessageBox.Close,QMessageBox.Close)
+                                    QMessageBox.Close, QMessageBox.Close)
+
+    def findpeaksplot(self):
+        # 对同一个绘图文件仅仅运行一次，否则会产生性能问题
+        if self.findpeaksdialog.findpeaksplotflag is not True:
+            self.findpeaksdialog.textEdit.setEnabled(True)
+            self.findpeaksdialog.textEdit.clear()
+            data = self.lastplotdata.iloc[:, 0].values
+            peaks = self.findpeaksdialog.find_peaks(data)
+            for peak in peaks:
+                if self.findpeaksdialog.peakmarkcheckbox.isChecked():
+                    arrow = pg.ArrowItem(pos=(peak, data[peak]), angle=-90)
+                    self.plotItem.addItem(arrow)
+                    self.findpeaksdialog.peaksmarklist.append(arrow)
+                if self.findpeaksdialog.peaktextchebox.isChecked():
+                    text = pg.TextItem("peak")
+                    text.setPos(peak, data[peak])
+                    self.plotItem.addItem(text)
+                    self.findpeaksdialog.peaksmarklist.append(text)
+                self.findpeaksdialog.textEdit.append("peak index is " + str(peak) + ", peak value is " + str(data[peak]))
+                self.findpeaksdialog.findpeaksplotflag = True
+
+    def clearpeaksmark(self):
+        for mark in self.findpeaksdialog.peaksmarklist:
+            self.plotItem.removeItem(mark)
+        self.findpeaksdialog.textEdit.clear()
+        self.findpeaksdialog.textEdit.setEnabled(False)
 
     def crosshaircheckboxstateChanged(self, checkbox):
         # 防止未绘图连续点击两次checkbox程序崩溃

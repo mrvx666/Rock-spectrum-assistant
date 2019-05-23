@@ -33,6 +33,10 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
         # 初始化默认选择的项目参数
         self.selectionchange()
 
+        # 初始化一些参数供RSA主窗体使用
+        self.peaksmarklist = []
+        self.findpeaksplotflag = False
+
     def selectionchange(self):
         current_selection = self.comboBox.currentText()
         if current_selection == "detect_peaks":
