@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>248</height>
+    <width>443</width>
+    <height>253</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>443</width>
+    <height>253</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>443</width>
+    <height>253</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>RSA:Findpeaks</string>
@@ -67,7 +79,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="parameter1doubleSpinBox"/>
+         <widget class="QDoubleSpinBox" name="parameter1doubleSpinBox">
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -90,7 +106,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="parameter2doubleSpinBox"/>
+         <widget class="QDoubleSpinBox" name="parameter2doubleSpinBox">
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -113,7 +133,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="parameter3doubleSpinBox"/>
+         <widget class="QDoubleSpinBox" name="parameter3doubleSpinBox">
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -136,7 +160,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="parameter4doubleSpinBox"/>
+         <widget class="QDoubleSpinBox" name="parameter4doubleSpinBox">
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -148,16 +176,16 @@
    <property name="geometry">
     <rect>
      <x>350</x>
-     <y>30</y>
+     <y>20</y>
      <width>81</width>
-     <height>111</height>
+     <height>121</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QPushButton" name="plotbutton">
+     <widget class="QPushButton" name="findpeaksbutton">
       <property name="text">
-       <string>plot</string>
+       <string>findpeaks</string>
       </property>
      </widget>
     </item>
@@ -172,6 +200,13 @@
      <widget class="QPushButton" name="clearbutton">
       <property name="text">
        <string>clear</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="closebutton">
+      <property name="text">
+       <string>close</string>
       </property>
      </widget>
     </item>

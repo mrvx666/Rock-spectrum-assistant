@@ -64,7 +64,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.findpeaksdialog = findpeaksdialog()
         self.Findpeaks.triggered.connect(self.findpeakswin)
         # 把子窗体plot、clear按钮点击交给RSA主窗体处理
-        self.findpeaksdialog.plotbutton.clicked.connect(self.findpeaksplot)
+        self.findpeaksdialog.findpeaksbutton.clicked.connect(self.findpeaksplot)
         self.findpeaksdialog.clearbutton.clicked.connect(self.clearfindpeaks)
 
         self.searchdialog = searchdialog(self.workdir)

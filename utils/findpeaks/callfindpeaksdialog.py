@@ -10,8 +10,8 @@ Janko_Slavic_findpeaks_help_url = "https://github.com/jankoslavic/py-tools/blob/
 tony_beltramelli_detect_peaks_help_url = "https://github.com/MonsieurV/py-findpeaks/blob/master/tests/libs/tony_beltramelli_detect_peaks.py"
 
 parameters_detect_peaks = {"Minimum distance": 1, "Minimum height": 0.2, "Relative threshold": 0}
-parameters_Janko_Slavic_findpeaks = {"spacing": 1, "limit": 7}
-parameters_tony_beltramelli_detect_peaks = {"threshold": 0.5}
+parameters_Janko_Slavic_findpeaks = {"spacing": 1, "limit": 0.2}
+parameters_tony_beltramelli_detect_peaks = {"threshold": 0.8}
 
 
 class findpeaksdialog(QDialog, Ui_findpeaksdialog):
@@ -114,6 +114,10 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
             QDesktopServices.openUrl(QUrl(Janko_Slavic_findpeaks_help_url))
         if current_selection == "tony_beltramelli_detect_peaks":
             QDesktopServices.openUrl(QUrl(tony_beltramelli_detect_peaks_help_url))
+
+    @pyqtSlot()
+    def on_closebutton_clicked(self):
+        self.close()
 
 
 if __name__ == '__main__':
