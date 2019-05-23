@@ -9,7 +9,7 @@ detect_peaks_help_url = "https://nbviewer.jupyter.org/github/demotu/BMC/blob/mas
 Janko_Slavic_findpeaks_help_url = "https://github.com/jankoslavic/py-tools/blob/master/findpeaks/Findpeaks%20example.ipynb"
 tony_beltramelli_detect_peaks_help_url = "https://github.com/MonsieurV/py-findpeaks/blob/master/tests/libs/tony_beltramelli_detect_peaks.py"
 
-parameters_detect_peaks = {"Minimum distance": None, "Minimum height": 1, "Relative threshold": 0}
+parameters_detect_peaks = {"Minimum distance": 1, "Minimum height": 0.2, "Relative threshold": 0}
 parameters_Janko_Slavic_findpeaks = {"spacing": 1, "limit": 7}
 parameters_tony_beltramelli_detect_peaks = {"threshold": 0.5}
 
@@ -35,7 +35,6 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
 
         # 初始化一些参数供RSA主窗体使用
         self.peaksmarklist = []
-        self.findpeaksplotflag = False
 
     def selectionchange(self):
         current_selection = self.comboBox.currentText()
@@ -100,6 +99,11 @@ class findpeaksdialog(QDialog, Ui_findpeaksdialog):
             threshold = parameters["threshold"]
             peaks_index_list = tony_beltramelli_detect_peaks(signal=data, threshold=threshold)
         return peaks_index_list
+
+    def clear(self):
+        self.textEdit.clear()
+        self.textEdit.setEnabled(False)
+        self.peaksmarklist.clear()
 
     @pyqtSlot()
     def on_helpbutton_clicked(self):

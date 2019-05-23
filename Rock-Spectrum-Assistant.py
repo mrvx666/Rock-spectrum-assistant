@@ -65,7 +65,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Findpeaks.triggered.connect(self.findpeakswin)
         # 把子窗体plot、clear按钮点击交给RSA主窗体处理
         self.findpeaksdialog.plotbutton.clicked.connect(self.findpeaksplot)
-        self.findpeaksdialog.clearbutton.clicked.connect(self.clearpeaksmark)
+        self.findpeaksdialog.clearbutton.clicked.connect(self.clearfindpeaks)
 
         self.searchdialog = searchdialog(self.workdir)
         # 把搜索子窗体双击事件连接到RSA主窗体进行处理
@@ -260,8 +260,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             DataItems_list = self.plotItem.listDataItems()
             for item in DataItems_list:
                 self.plotItem.legend.removeItem(name=item.name())
-        if self.findpeaksdialog.findpeaksplotflag is True:
-            self.clearpeaksmark()
+        if self.findpeaksdialog.isVisible() is True:
+            self.clearfindpeaks()
+            self.findpeaksdialog.close()
         self.axis_y_data_arr.clear()
         self.axis_x_dict_arr.clear()
         self.pyqtgraph.clear()
@@ -340,30 +341,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                     QMessageBox.Close, QMessageBox.Close)
 
     def findpeaksplot(self):
-        # 对同一个绘图文件仅仅运行一次，否则会产生性能问题
-        if self.findpeaksdialog.findpeaksplotflag is not True:
-            self.findpeaksdialog.textEdit.setEnabled(True)
-            self.findpeaksdialog.textEdit.clear()
-            data = self.lastplotdata.iloc[:, 0].values
-            peaks = self.findpeaksdialog.find_peaks(data)
-            for peak in peaks:
-                if self.findpeaksdialog.peakmarkcheckbox.isChecked():
-                    arrow = pg.ArrowItem(pos=(peak, data[peak]), angle=-90)
-                    self.plotItem.addItem(arrow)
-                    self.findpeaksdialog.peaksmarklist.append(arrow)
-                if self.findpeaksdialog.peaktextchebox.isChecked():
-                    text = pg.TextItem("peak")
-                    text.setPos(peak, data[peak])
-                    self.plotItem.addItem(text)
-                    self.findpeaksdialog.peaksmarklist.append(text)
-                self.findpeaksdialog.textEdit.append("peak index is " + str(peak) + ", peak value is " + str(data[peak]))
-                self.findpeaksdialog.findpeaksplotflag = True
+        data = self.lastplotdata.iloc[:, 0].values
+        peaks = self.findpeaksdialog.find_peaks(data)
+        self.findpeaksdialog.textEdit.clear()
+        self.findpeaksdialog.textEdit.setEnabled(True)
+        self.findpeaksdialog.textEdit.append("peak index,peak values")
+        # 添加元素前清空一次
+        self.clearpeaksmark()
+        for peak in peaks:
+            if self.findpeaksdialog.peakmarkcheckbox.isChecked():
+                arrow = pg.ArrowItem(pos=(peak, data[peak]), angle=-90)
+                self.plotItem.addItem(arrow)
+                self.findpeaksdialog.peaksmarklist.append(arrow)
+            if self.findpeaksdialog.peaktextchebox.isChecked():
+                text = pg.TextItem("peak")
+                text.setPos(peak, data[peak])
+                self.plotItem.addItem(text)
+                self.findpeaksdialog.peaksmarklist.append(text)
+            self.findpeaksdialog.textEdit.append("[" + str(peak) + "," + str(data[peak]) + "]")
+
+    def clearfindpeaks(self):
+        self.clearpeaksmark()
+        self.findpeaksdialog.clear()
 
     def clearpeaksmark(self):
         for mark in self.findpeaksdialog.peaksmarklist:
             self.plotItem.removeItem(mark)
-        self.findpeaksdialog.textEdit.clear()
-        self.findpeaksdialog.textEdit.setEnabled(False)
 
     def crosshaircheckboxstateChanged(self, checkbox):
         # 防止未绘图连续点击两次checkbox程序崩溃
