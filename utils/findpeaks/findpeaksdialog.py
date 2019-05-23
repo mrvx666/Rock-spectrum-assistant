@@ -99,9 +99,9 @@ class Ui_findpeaksdialog(object):
         self.helpbutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
         self.helpbutton.setObjectName("helpbutton")
         self.verticalLayout_3.addWidget(self.helpbutton)
-        self.closebutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
-        self.closebutton.setObjectName("closebutton")
-        self.verticalLayout_3.addWidget(self.closebutton)
+        self.clearbutton = QtWidgets.QPushButton(self.verticalLayoutWidget_2)
+        self.clearbutton.setObjectName("clearbutton")
+        self.verticalLayout_3.addWidget(self.clearbutton)
 
         self.retranslateUi(findpeaksdialog)
         QtCore.QMetaObject.connectSlotsByName(findpeaksdialog)
@@ -118,7 +118,7 @@ class Ui_findpeaksdialog(object):
         self.parameter4label.setText(_translate("findpeaksdialog", "parameter4"))
         self.plotbutton.setText(_translate("findpeaksdialog", "plot"))
         self.helpbutton.setText(_translate("findpeaksdialog", "help"))
-        self.closebutton.setText(_translate("findpeaksdialog", "close"))
+        self.clearbutton.setText(_translate("findpeaksdialog", "clear"))
 
 
 import apprcc_rc
