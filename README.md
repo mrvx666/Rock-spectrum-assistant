@@ -44,6 +44,10 @@ https://zmister.com/archives/802.html
 
 https://github.com/Lowpower/notepad
 
+7.perform peak detection in Python by MonsieurV
+
+https://github.com/MonsieurV/py-findpeaks
+
 
 
 
