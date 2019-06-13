@@ -342,6 +342,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def findpeaksplot(self):
         data = self.lastplotdata.iloc[:, 0].values
+        # 这个值用来对齐绘图板显示的x轴坐标和返回的峰x轴坐标的差异
+        firstindex = int(self.lastplotdata.index[0])
         peaks = self.findpeaksdialog.find_peaks(data)
         self.findpeaksdialog.textEdit.clear()
         self.findpeaksdialog.textEdit.setEnabled(True)
@@ -358,7 +360,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 text.setPos(peak, data[peak])
                 self.plotItem.addItem(text)
                 self.findpeaksdialog.peaksmarklist.append(text)
-            self.findpeaksdialog.textEdit.append("[" + str(peak) + "," + str(data[peak]) + "]")
+            self.findpeaksdialog.textEdit.append("[" + str(peak+firstindex) + "," + str(data[peak]) + "]")
 
     def clearfindpeaks(self):
         self.clearpeaksmark()
